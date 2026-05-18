@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 
 const items = [
@@ -21,24 +21,45 @@ const tagColors: Record<string, { bg: string; color: string }> = {
 };
 
 export default function Gallery() {
-  const refs = useRef<(HTMLDivElement | null)[]>([]);
-  useEffect(() => {
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-    refs.current.forEach(el => { if (el) obs.observe(el); });
-    return () => obs.disconnect();
+  const [current, setCurrent] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [animDir, setAnimDir] = useState<'left' | 'right'>('right');
+  const [visible, setVisible] = useState(true);
+
+  const goTo = useCallback((idx: number, dir: 'left' | 'right' = 'right') => {
+    setAnimDir(dir);
+    setVisible(false);
+    setTimeout(() => {
+      setCurrent(idx);
+      setVisible(true);
+    }, 220);
   }, []);
+
+  const prev = () => {
+    setPaused(true);
+    goTo((current - 1 + items.length) % items.length, 'left');
+  };
+
+  const next = useCallback(() => {
+    goTo((current + 1) % items.length, 'right');
+  }, [current, goTo]);
+
+  // Auto-advance every 3.5s
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(() => next(), 3500);
+    return () => clearInterval(t);
+  }, [paused, next]);
+
+  const item = items[current];
+  const tc = tagColors[item.tag] ?? { bg: '#E8F2FB', color: '#2A5A7A' };
 
   return (
     <section id="galeri" style={{ background: '#FAF8F5', padding: '96px 24px' }}>
       <div style={{ maxWidth: 1080, margin: '0 auto' }}>
 
         {/* Header */}
-        <div
-          ref={el => { refs.current[0] = el; }}
-          style={{ textAlign: 'center', marginBottom: 64 }}
-        >
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <p className="sans" style={{
             fontSize: 11, fontWeight: 600, letterSpacing: '0.1em',
             textTransform: 'uppercase', color: '#9E958F', marginBottom: 16,
@@ -67,72 +88,122 @@ export default function Gallery() {
           </p>
         </div>
 
-        {/* Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: 20,
-        }}>
-          {items.map((item, i) => {
-            const tc = tagColors[item.tag] ?? { bg: '#E8F2FB', color: '#2A5A7A' };
-            return (
-              <div
-                key={i}
-                ref={el => { refs.current[i + 1] = el; }}
-              className="card-shadow card-shadow-hover"
-              style={{
-                  borderRadius: 18,
-                  overflow: 'hidden',
-                  background: '#fff',
-                  transition: 'box-shadow 0.3s, transform 0.3s',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'}
-                onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'}
-              >
-                {/* Image */}
-                <div style={{ position: 'relative', aspectRatio: '4/5' }}>
-                  <Image
-                    src={item.src}
-                    alt={item.caption}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                </div>
+        {/* Slideshow */}
+        <div
+          style={{ position: 'relative', maxWidth: 520, margin: '0 auto' }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          {/* Card */}
+          <div style={{
+            borderRadius: 24,
+            overflow: 'hidden',
+            background: '#fff',
+            boxShadow: '0 20px 60px rgba(44,37,35,0.12), 0 4px 16px rgba(44,37,35,0.06)',
+            transition: 'opacity 0.22s ease, transform 0.22s ease',
+            opacity: visible ? 1 : 0,
+            transform: visible
+              ? 'translateX(0)'
+              : animDir === 'right' ? 'translateX(24px)' : 'translateX(-24px)',
+          }}>
+            {/* Image */}
+            <div style={{ position: 'relative', aspectRatio: '4/5' }}>
+              <Image
+                key={current}
+                src={item.src}
+                alt={item.caption}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 90vw, 520px"
+                priority
+              />
+              {/* Tag badge overlay */}
+              <span className="sans" style={{
+                position: 'absolute', top: 16, left: 16,
+                padding: '4px 12px', borderRadius: 99,
+                background: tc.bg, color: tc.color,
+                fontSize: 11, fontWeight: 600,
+                backdropFilter: 'blur(8px)',
+              }}>
+                {item.tag}
+              </span>
+              {/* Counter */}
+              <span className="sans" style={{
+                position: 'absolute', top: 16, right: 16,
+                padding: '4px 12px', borderRadius: 99,
+                background: 'rgba(44,37,35,0.5)', color: '#FAF8F5',
+                fontSize: 11, fontWeight: 500,
+                backdropFilter: 'blur(8px)',
+              }}>
+                {current + 1} / {items.length}
+              </span>
+            </div>
 
-                {/* Caption */}
-                <div style={{ padding: '16px 18px 18px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                    <div>
-                      <p style={{
-                        fontFamily: 'Georgia, serif', fontSize: 15,
-                        color: '#2C2523', marginBottom: 3, lineHeight: 1.3,
-                      }}>
-                        {item.caption}
-                      </p>
-                      <p className="sans" style={{ fontSize: 12, color: '#9E958F' }}>{item.sub}</p>
-                    </div>
-                    <span className="sans" style={{
-                      padding: '3px 10px', borderRadius: 99,
-                      background: tc.bg, color: tc.color,
-                      fontSize: 11, fontWeight: 600,
-                      whiteSpace: 'nowrap', flexShrink: 0,
-                    }}>
-                      {item.tag}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+            {/* Caption */}
+            <div style={{ padding: '20px 24px 22px' }}>
+              <p style={{
+                fontFamily: 'Georgia, serif', fontSize: 17,
+                color: '#2C2523', marginBottom: 4, lineHeight: 1.3,
+              }}>
+                {item.caption}
+              </p>
+              <p className="sans" style={{ fontSize: 13, color: '#9E958F' }}>{item.sub}</p>
+            </div>
+          </div>
+
+          {/* Prev button */}
+          <button onClick={prev} aria-label="Sebelumnya" style={{
+            position: 'absolute', left: -20, top: '42%', transform: 'translateY(-50%)',
+            width: 44, height: 44, borderRadius: '50%',
+            background: '#FAF8F5', border: 'none', cursor: 'pointer',
+            boxShadow: '0 4px 16px rgba(44,37,35,0.14)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18, color: '#2C2523',
+            transition: 'transform 0.15s, box-shadow 0.15s',
+          }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-50%) scale(1.1)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-50%) scale(1)'; }}
+          >
+            ‹
+          </button>
+
+          {/* Next button */}
+          <button onClick={() => { setPaused(true); next(); }} aria-label="Berikutnya" style={{
+            position: 'absolute', right: -20, top: '42%', transform: 'translateY(-50%)',
+            width: 44, height: 44, borderRadius: '50%',
+            background: '#FAF8F5', border: 'none', cursor: 'pointer',
+            boxShadow: '0 4px 16px rgba(44,37,35,0.14)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18, color: '#2C2523',
+            transition: 'transform 0.15s, box-shadow 0.15s',
+          }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-50%) scale(1.1)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-50%) scale(1)'; }}
+          >
+            ›
+          </button>
+        </div>
+
+        {/* Dot indicators */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 28 }}>
+          {items.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => { setPaused(true); goTo(i, i > current ? 'right' : 'left'); }}
+              aria-label={`Foto ${i + 1}`}
+              style={{
+                width: i === current ? 24 : 8,
+                height: 8, borderRadius: 99, border: 'none', cursor: 'pointer',
+                background: i === current ? '#2C2523' : '#D4CFC9',
+                transition: 'all 0.3s ease',
+                padding: 0,
+              }}
+            />
+          ))}
         </div>
 
         {/* Bottom note */}
-        <div
-          ref={el => { refs.current[items.length + 1] = el; }}
-          style={{ textAlign: 'center', marginTop: 56 }}
-        >
+        <div style={{ textAlign: 'center', marginTop: 56 }}>
           <p className="sans" style={{ color: '#9E958F', marginBottom: 20, fontSize: 15 }}>
             Punya foto istimewa? Kami bantu wujudkan.
           </p>
