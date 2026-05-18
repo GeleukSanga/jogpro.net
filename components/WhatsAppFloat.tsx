@@ -1,9 +1,14 @@
 'use client';
+import { waLink } from '@/lib/wa';
 
-export default function WhatsAppFloat() {
+type WhatsAppFloatProps = {
+  waText?: string;
+};
+
+export default function WhatsAppFloat({ waText = 'Halo, saya tertarik dengan lampu kenangan litophane' }: WhatsAppFloatProps) {
   return (
     <a
-      href="https://wa.me/6289725239680?text=Halo,%20saya%20tertarik%20dengan%20lampu%20kenangan%20litophane"
+      href={waLink(waText)}
       target="_blank" rel="noopener noreferrer"
       aria-label="Chat WhatsApp"
       style={{

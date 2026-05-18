@@ -1,7 +1,13 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import { LandingVariant } from '@/lib/landingVariants';
+import { waLink } from '@/lib/wa';
 
-export default function Hero() {
+type HeroProps = {
+  variant: LandingVariant;
+};
+
+export default function Hero({ variant }: HeroProps) {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -15,8 +21,11 @@ export default function Hero() {
     if (!video) return;
     video.muted = true;
     video.play().catch(() => {
-      // fallback: play on first user interaction
-      const handler = () => { video.play(); document.removeEventListener('touchstart', handler); document.removeEventListener('click', handler); };
+      const handler = () => {
+        video.play();
+        document.removeEventListener('touchstart', handler);
+        document.removeEventListener('click', handler);
+      };
       document.addEventListener('touchstart', handler, { once: true });
       document.addEventListener('click', handler, { once: true });
     });
@@ -25,32 +34,29 @@ export default function Hero() {
   return (
     <section className="hero-section">
       <div className="hero-container">
-        <div className="hero-grid">
+        {/* Offer Bar */}
+        <div className="offer-bar">
+          {variant.offerItems.map((item) => (
+            <span key={item} className="offer-chip sans">{item}</span>
+          ))}
+        </div>
 
+        <div className="hero-grid">
           {/* LEFT — Copy */}
           <div ref={ref} className="fade-up hero-copy">
-            {/* Eyebrow */}
-            <div className="sans hero-eyebrow">
-              🕯 Hadiah Paling Bermakna
-            </div>
+            <div className="sans hero-eyebrow">{variant.eyebrow}</div>
 
-            {/* Headline */}
             <h1 className="hero-headline">
-              Mereka selalu<br />
-              <span className="hero-headline-accent">ada dalam</span>{' '}
-              cahayamu
+              {variant.headlineTop}<br />
+              <span className="hero-headline-accent">{variant.headlineAccent}</span>{' '}
+              {variant.headlineBottom}
             </h1>
 
-            {/* Sub */}
-            <p className="sans hero-sub">
-              Ubah foto orang tersayangmu menjadi lampu tidur yang bercahaya hangat.
-              Setiap malam, wajah mereka menyambutmu dalam cahaya yang tenang.
-            </p>
+            <p className="sans hero-sub">{variant.subtext}</p>
 
-            {/* CTAs */}
             <div className="hero-ctas">
               <a
-                href="https://wa.me/628972523968?text=Halo,%20saya%20ingin%20memesan%20lampu%20kenangan%20litophane"
+                href={waLink(variant.primaryWaText)}
                 target="_blank" rel="noopener noreferrer"
                 className="sans btn-primary"
                 onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'}
@@ -64,9 +70,27 @@ export default function Hero() {
               </a>
             </div>
 
-            {/* Trust strip */}
+            {/* Intent selector */}
+            <div className="intent-wrap">
+              <p className="sans intent-title">Pilih kebutuhanmu, kami siapkan rekomendasi cepat:</p>
+              <div className="intent-grid">
+                {variant.intentOptions.map((opt) => (
+                  <a
+                    key={opt.label}
+                    href={waLink(opt.waText)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="sans intent-btn"
+                  >
+                    <span>{opt.emoji}</span>
+                    <span>{opt.label}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
             <div className="sans hero-trust">
-              {['⚡ Proses 3–5 hari', '📦 Kirim se-Indonesia', '🎁 Bisa beri hadiah'].map(t => (
+              {['✅ Konsultasi gratis', '⚡ Respon cepat', '🛡️ Aman untuk pemula'].map(t => (
                 <span key={t} className="hero-trust-item">{t}</span>
               ))}
             </div>
@@ -74,7 +98,6 @@ export default function Hero() {
 
           {/* RIGHT — Featured video */}
           <div className="hero-image-wrap fade-up visible">
-            {/* Main card */}
             <div className="hero-image-card">
               <video
                 ref={videoRef}
@@ -87,7 +110,6 @@ export default function Hero() {
                 <source src="/litophane-hero.webm" type="video/webm" />
                 <source src="/litophane-hero.mp4" type="video/mp4" />
               </video>
-              {/* caption badge */}
               <div className="hero-image-caption">
                 <p style={{ fontFamily: 'Georgia, serif', fontSize: 14, color: '#2C2523', marginBottom: 2 }}>
                   Lihat produk aslinya — bercahaya hangat
@@ -98,7 +120,6 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Floating mini card */}
             <div className="hero-badge">
               <div style={{ fontSize: 24, marginBottom: 6 }}>💛</div>
               <p className="sans" style={{ fontSize: 12, fontWeight: 600, color: '#2C2523', marginBottom: 2 }}>
@@ -107,15 +128,12 @@ export default function Hero() {
               <p className="sans" style={{ fontSize: 11, color: '#9E958F' }}>sudah dipesan</p>
             </div>
 
-            {/* Decorative soft circle */}
             <div className="hero-deco-circle" />
           </div>
-
         </div>
       </div>
 
       <style>{`
-        /* ── Section ── */
         .hero-section {
           min-height: 100vh;
           background: linear-gradient(160deg, #FAF8F5 0%, #F2EDE6 55%, #FAE8EC 100%);
@@ -127,11 +145,28 @@ export default function Hero() {
         .hero-container {
           max-width: 1080px;
           margin: 0 auto;
-          padding: 60px 24px;
+          padding: 42px 24px 60px;
           width: 100%;
         }
 
-        /* ── Grid: 2-col desktop, 1-col mobile ── */
+        .offer-bar {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-bottom: 28px;
+        }
+
+        .offer-chip {
+          padding: 8px 14px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 600;
+          background: rgba(255,255,255,0.72);
+          color: #2C2523;
+          border: 1px solid rgba(44,37,35,0.12);
+          backdrop-filter: blur(6px);
+        }
+
         .hero-grid {
           display: grid;
           grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -139,7 +174,6 @@ export default function Hero() {
           align-items: center;
         }
 
-        /* ── Copy ── */
         .hero-eyebrow {
           display: inline-flex;
           align-items: center;
@@ -174,16 +208,15 @@ export default function Hero() {
           font-size: 16px;
           line-height: 1.7;
           color: #5A524E;
-          max-width: 420px;
-          margin-bottom: 36px;
+          max-width: 460px;
+          margin-bottom: 28px;
         }
 
-        /* ── CTAs ── */
         .hero-ctas {
           display: flex;
           gap: 12px;
           flex-wrap: wrap;
-          margin-bottom: 0;
+          margin-bottom: 20px;
         }
 
         .btn-primary {
@@ -218,11 +251,48 @@ export default function Hero() {
           white-space: nowrap;
         }
 
-        /* ── Trust strip ── */
+        .intent-wrap {
+          margin-bottom: 22px;
+        }
+
+        .intent-title {
+          font-size: 13px;
+          color: #7b726d;
+          margin-bottom: 10px;
+        }
+
+        .intent-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 10px;
+        }
+
+        .intent-btn {
+          min-height: 42px;
+          border-radius: 12px;
+          background: rgba(255,255,255,0.78);
+          border: 1px solid rgba(44,37,35,0.12);
+          color: #2C2523;
+          text-decoration: none;
+          font-size: 13px;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          transition: transform 0.18s ease, box-shadow 0.18s ease;
+          box-shadow: 0 2px 10px rgba(44,37,35,0.08);
+        }
+
+        .intent-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 18px rgba(44,37,35,0.12);
+        }
+
         .hero-trust {
           display: flex;
-          gap: 20px;
-          margin-top: 40px;
+          gap: 16px;
+          margin-top: 8px;
           flex-wrap: wrap;
         }
 
@@ -231,7 +301,6 @@ export default function Hero() {
           color: #9E958F;
         }
 
-        /* ── Image side ── */
         .hero-image-wrap {
           position: relative;
         }
@@ -285,7 +354,12 @@ export default function Hero() {
           z-index: -1;
         }
 
-        /* ── MOBILE ── */
+        @media (max-width: 900px) {
+          .intent-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
         @media (max-width: 768px) {
           .hero-section {
             padding-top: 70px;
@@ -293,7 +367,17 @@ export default function Hero() {
           }
 
           .hero-container {
-            padding: 40px 20px 60px;
+            padding: 34px 20px 60px;
+          }
+
+          .offer-bar {
+            margin-bottom: 20px;
+            gap: 8px;
+          }
+
+          .offer-chip {
+            font-size: 11px;
+            padding: 7px 10px;
           }
 
           .hero-grid {
@@ -301,7 +385,6 @@ export default function Hero() {
             gap: 0;
           }
 
-          /* Gambar dulu di mobile */
           .hero-image-wrap {
             order: -1;
             margin-bottom: 36px;
@@ -312,7 +395,6 @@ export default function Hero() {
             border-radius: 18px;
           }
 
-          /* Badge jangan keluar layar */
           .hero-badge {
             top: -14px;
             right: -10px;
@@ -339,7 +421,7 @@ export default function Hero() {
 
           .hero-sub {
             font-size: 15px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             max-width: 100%;
           }
 
@@ -355,8 +437,8 @@ export default function Hero() {
           }
 
           .hero-trust {
-            margin-top: 28px;
-            gap: 12px;
+            margin-top: 20px;
+            gap: 10px;
           }
 
           .hero-trust-item {
@@ -364,7 +446,6 @@ export default function Hero() {
           }
         }
 
-        /* ── SMALL MOBILE (≤ 380px) ── */
         @media (max-width: 380px) {
           .hero-container {
             padding: 32px 16px 48px;

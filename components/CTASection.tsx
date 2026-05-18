@@ -1,6 +1,13 @@
 'use client';
+import { waLink } from '@/lib/wa';
 
-export default function CTASection() {
+type CTASectionProps = {
+  title: string;
+  subtext: string;
+  waText: string;
+};
+
+export default function CTASection({ title, subtext, waText }: CTASectionProps) {
   return (
     <section style={{
       background: 'linear-gradient(160deg, #BFD7ED 0%, #F2C4CE 100%)',
@@ -17,16 +24,15 @@ export default function CTASection() {
           letterSpacing: '-0.02em',
           color: '#2C2523', marginBottom: 20,
         }}>
-          Siapa yang ingin kamu kenang?
+          {title}
         </h2>
 
         <p className="sans" style={{
           fontSize: 16, lineHeight: 1.7,
           color: 'rgba(44,37,35,0.7)',
-          maxWidth: 480, margin: '0 auto 12px',
+          maxWidth: 520, margin: '0 auto 12px',
         }}>
-          Jangan biarkan foto berharga hanya tersimpan di galeri ponsel.
-          Wujudkan mereka dalam cahaya yang selalu menyala.
+          {subtext}
         </p>
 
         <p className="sans" style={{
@@ -37,7 +43,7 @@ export default function CTASection() {
         </p>
 
         <a
-          href="https://wa.me/6289725239680?text=Halo,%20saya%20ingin%20memesan%20lampu%20kenangan%20litophane"
+          href={waLink(waText)}
           target="_blank" rel="noopener noreferrer"
           className="sans"
           style={{
