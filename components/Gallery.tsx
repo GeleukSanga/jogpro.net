@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import { parseUtmFromLocation, trackedWaLink, UtmContext } from '@/lib/wa';
 
 const items = [
   { src: '/portfolio/p1.jpg', caption: 'Kenangan di Batu Caves', sub: 'Pasangan', tag: 'Pasangan' },
@@ -27,6 +28,12 @@ export default function Gallery() {
   const [paused, setPaused] = useState(false);
   const [animDir, setAnimDir] = useState<'left' | 'right'>('right');
   const [visible, setVisible] = useState(true);
+  const [utmContext, setUtmContext] = useState<UtmContext | undefined>(undefined);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setUtmContext(parseUtmFromLocation(window.location.search, window.location.pathname));
+  }, []);
 
   const goTo = useCallback((idx: number, dir: 'left' | 'right' = 'right') => {
     setAnimDir(dir);
@@ -210,7 +217,7 @@ export default function Gallery() {
             Punya foto istimewa? Kami bantu wujudkan.
           </p>
           <a
-            href="https://wa.me/6289725239680?text=Halo,%20saya%20ingin%20konsultasi%20litophane"
+            href={trackedWaLink('Halo, saya ingin konsultasi litophane', utmContext)}
             target="_blank" rel="noopener noreferrer"
             className="sans"
             style={{

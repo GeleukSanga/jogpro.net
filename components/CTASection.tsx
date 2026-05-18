@@ -1,13 +1,14 @@
 'use client';
-import { waLink } from '@/lib/wa';
+import { trackedWaLink, UtmContext } from '@/lib/wa';
 
 type CTASectionProps = {
   title: string;
   subtext: string;
   waText: string;
+  utmContext?: UtmContext;
 };
 
-export default function CTASection({ title, subtext, waText }: CTASectionProps) {
+export default function CTASection({ title, subtext, waText, utmContext }: CTASectionProps) {
   return (
     <section style={{
       background: 'linear-gradient(160deg, #BFD7ED 0%, #F2C4CE 100%)',
@@ -43,7 +44,7 @@ export default function CTASection({ title, subtext, waText }: CTASectionProps) 
         </p>
 
         <a
-          href={waLink(waText)}
+          href={trackedWaLink(waText, utmContext)}
           target="_blank" rel="noopener noreferrer"
           className="sans"
           style={{

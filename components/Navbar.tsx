@@ -1,12 +1,19 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { parseUtmFromLocation, trackedWaLink, UtmContext } from '@/lib/wa';
 
 export default function Navbar() {
+  const [utmContext, setUtmContext] = useState<UtmContext | undefined>(undefined);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 30);
     window.addEventListener('scroll', fn);
     return () => window.removeEventListener('scroll', fn);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setUtmContext(parseUtmFromLocation(window.location.search, window.location.pathname));
   }, []);
 
   return (
@@ -37,7 +44,7 @@ export default function Navbar() {
 
           {/* CTA */}
           <a
-            href="https://wa.me/6289725239680?text=Halo,%20saya%20ingin%20pesan%20lampu%20kenangan"
+            href={trackedWaLink('Halo, saya ingin pesan lampu kenangan', utmContext)}
             target="_blank"
             rel="noopener noreferrer"
             className="sans"

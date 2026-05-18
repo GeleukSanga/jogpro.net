@@ -1,14 +1,18 @@
 'use client';
-import { waLink } from '@/lib/wa';
+import { trackedWaLink, UtmContext } from '@/lib/wa';
 
 type WhatsAppFloatProps = {
   waText?: string;
+  utmContext?: UtmContext;
 };
 
-export default function WhatsAppFloat({ waText = 'Halo, saya tertarik dengan lampu kenangan litophane' }: WhatsAppFloatProps) {
+export default function WhatsAppFloat({
+  waText = 'Halo, saya tertarik dengan lampu kenangan litophane',
+  utmContext,
+}: WhatsAppFloatProps) {
   return (
     <a
-      href={waLink(waText)}
+      href={trackedWaLink(waText, utmContext)}
       target="_blank" rel="noopener noreferrer"
       aria-label="Chat WhatsApp"
       style={{

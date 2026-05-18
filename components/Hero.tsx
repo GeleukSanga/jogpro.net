@@ -1,13 +1,14 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import { LandingVariant } from '@/lib/landingVariants';
-import { waLink } from '@/lib/wa';
+import { trackedWaLink, UtmContext } from '@/lib/wa';
 
 type HeroProps = {
   variant: LandingVariant;
+  utmContext?: UtmContext;
 };
 
-export default function Hero({ variant }: HeroProps) {
+export default function Hero({ variant, utmContext }: HeroProps) {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -56,7 +57,7 @@ export default function Hero({ variant }: HeroProps) {
 
             <div className="hero-ctas">
               <a
-                href={waLink(variant.primaryWaText)}
+                href={trackedWaLink(variant.primaryWaText, utmContext)}
                 target="_blank" rel="noopener noreferrer"
                 className="sans btn-primary"
                 onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)'}
@@ -77,7 +78,7 @@ export default function Hero({ variant }: HeroProps) {
                 {variant.intentOptions.map((opt) => (
                   <a
                     key={opt.label}
-                    href={waLink(opt.waText)}
+                    href={trackedWaLink(opt.waText, utmContext)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="sans intent-btn"
