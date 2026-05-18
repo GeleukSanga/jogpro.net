@@ -154,6 +154,7 @@ export default function Hero({ variant }: HeroProps) {
           flex-wrap: wrap;
           gap: 10px;
           margin-bottom: 28px;
+          justify-content: flex-start;
         }
 
         .offer-chip {
@@ -373,6 +374,7 @@ export default function Hero({ variant }: HeroProps) {
           .offer-bar {
             margin-bottom: 20px;
             gap: 8px;
+            justify-content: center;
           }
 
           .offer-chip {
