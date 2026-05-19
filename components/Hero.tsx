@@ -44,7 +44,7 @@ export default function Hero({ variant, utmContext }: HeroProps) {
         </div>
 
         {/* Countdown Timer */}
-        <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+        <div className="countdown-wrap">
           <Countdown variant="hero" />
         </div>
 
@@ -161,6 +161,11 @@ export default function Hero({ variant, utmContext }: HeroProps) {
           flex-wrap: wrap;
           gap: 10px;
           margin-bottom: 28px;
+          justify-content: flex-start;
+        }
+
+        .countdown-wrap {
+          display: flex;
           justify-content: flex-start;
         }
 
@@ -385,6 +390,10 @@ export default function Hero({ variant, utmContext }: HeroProps) {
           .offer-bar {
             margin-bottom: 20px;
             gap: 8px;
+            justify-content: center;
+          }
+
+          .countdown-wrap {
             justify-content: center;
           }
 
