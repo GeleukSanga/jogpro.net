@@ -260,6 +260,7 @@ export default function Hero({ variant, utmContext }: HeroProps) {
         .intent-title {
           font-size: 13px;
           color: #7b726d;
+          text-align: center;
           margin-bottom: 10px;
         }
 
@@ -294,6 +295,9 @@ export default function Hero({ variant, utmContext }: HeroProps) {
         .hero-trust {
           display: flex;
           gap: 16px;
+          justify-content: center;
+          flex-wrap: wrap;
+          text-align: center;
           margin-top: 8px;
           flex-wrap: wrap;
         }
