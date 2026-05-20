@@ -38,6 +38,7 @@ export default function LandingPage({ variantKey }: LandingPageProps) {
     const handleWaClick = (e: Event) => {
       const target = (e.target as HTMLElement).closest('a');
       if (target && target.getAttribute('href')?.includes('wa.me')) {
+        // Meta Pixel tracking
         const fbq = (window as any).fbq;
         if (fbq) {
           fbq('track', 'Contact');
@@ -45,6 +46,15 @@ export default function LandingPage({ variantKey }: LandingPageProps) {
             page: window.location.pathname,
             text: target.innerText.trim(),
             timestamp: new Date().toISOString(),
+          });
+        }
+
+        // TikTok Pixel tracking
+        const ttq = (window as any).ttq;
+        if (ttq) {
+          ttq.track('Contact', {
+            content_name: target.innerText.trim(),
+            page: window.location.pathname,
           });
         }
       }
