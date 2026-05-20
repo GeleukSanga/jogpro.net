@@ -63,16 +63,14 @@ export default function LandingPage({ variantKey }: LandingPageProps) {
           });
         }
 
-        // TikTok Pixel tracking (with ready check)
+        // TikTok Pixel tracking
         const ttq = (window as any).ttq;
-        if (ttq && ttq.ready) {
-          ttq.ready(() => {
-            ttq.track('Contact', {
-              content_name: target.innerText.trim(),
-              content_type: 'product',
-              value: 99000,
-              currency: 'IDR',
-            });
+        if (ttq) {
+          ttq.track('Contact', {
+            content_name: target.innerText.trim(),
+            content_type: 'product',
+            value: 99000,
+            currency: 'IDR',
           });
         }
       }
