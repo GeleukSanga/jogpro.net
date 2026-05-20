@@ -37,6 +37,7 @@ export default function LandingPage({ variantKey }: LandingPageProps) {
     const ttq = (window as any).ttq;
     if (ttq) {
       ttq.track('ViewContent', {
+        content_id: 'lumimemo-lampu-custom',
         content_name: 'LumiMemo Landing Page',
         content_type: 'product',
         value: 99000,
