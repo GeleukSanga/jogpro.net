@@ -268,6 +268,42 @@ export default function AffiliatorPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* FAQ */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+        style={{ maxWidth: 700, margin: '0 auto', paddingTop: 48 }}>
+        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 24, textAlign: 'center', marginBottom: 32 }}>❓ FAQ — Pertanyaan Umum</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[
+            ['💸', 'Kapan payout / pencairan komisi?', 'Setiap akhir pekan (Sabtu/Minggu). Saldo akan otomatis ditransfer ke rekening/ewallet kamu.'],
+            ['📊', 'Berapa minimal saldo untuk payout?', 'Minimal saldo Rp10.000. Kalau di bawah itu, saldo akan diakumulasi ke minggu berikutnya.'],
+            ['🎁', 'Apakah sampel benar-benar gratis?', 'Iya! 3 sampel produk 100% gratis termasuk ongkir. Kamu tidak perlu bayar apa pun.'],
+            ['📹', 'Harus posting di platform apa?', 'Bebas! TikTok, Instagram, Facebook, Threads — yang penting kontennya tentang produk Jogpro.'],
+            ['⏱️', 'Ada batas waktu posting konten?', 'Ya, minimal 1 konten dalam 7 hari setelah sampel diterima. Semakin sering posting, semakin banyak cuan!'],
+            ['🛒', 'Bagaimana cara dapat komisi affiliate?', 'Gunakan affiliate link TikTok Shop & Shopee yang kami sediakan di dashboard. Setiap penjualan lewat link kamu = komisi hingga 20%.'],
+            ['👥', 'Apakah follower TikTok wajib 600?', 'Ya, karena untuk generate affiliate link TikTok Shop butuh minimal 600 followers. Tapi kamu tetap bisa posting di IG/FB/Threads ya.'],
+            ['📦', 'Berapa lama pengiriman sampel?', '2-3 hari kerja via JNT/Lion Parcel. Gratis ongkir untuk seluruh Pulau Jawa.'],
+          ].map(([emoji, q, a]) => (
+            <div key={q} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '20px 24px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <span style={{ fontSize: 22, flexShrink: 0 }}>{emoji}</span>
+                <div>
+                  <h4 style={{ color: '#fff', fontWeight: 700, fontSize: 15, margin: '0 0 6px 0' }}>{q}</h4>
+                  <p style={{ color: '#a78bfa', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{a}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Final CTA */}
+        <div style={{ textAlign: 'center', marginTop: 40, paddingBottom: 48 }}>
+          <p style={{ color: '#c4b5fd', fontSize: 16, marginBottom: 8 }}>Masih ada pertanyaan?</p>
+          <a href="https://wa.me/628972523968" target="_blank" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#25D366,#128C7E)', borderRadius: 12, padding: '14px 28px', color: '#fff', fontWeight: 700, fontSize: 16, textDecoration: 'none' }}>
+            💬 Chat via WhatsApp
+          </a>
+        </div>
+      </motion.div>
     </div>
   )
 }
