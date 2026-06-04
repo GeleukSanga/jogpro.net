@@ -125,7 +125,8 @@ export default function AffiliatorPage() {
             ['1️⃣', 'Daftar', 'Isi form + pilih 3 sampel gratis'],
             ['2️⃣', 'Terima Sampel', 'Kami kirim produk fisik dalam 2-3 hari'],
             ['3️⃣', 'Bikin Konten', 'Review produk, upload ke TikTok/IG/FB/Threads'],
-            ['4️⃣', 'Dapat Cuan!', 'Komisi views + komisi affiliate'],
+            ['4️⃣', 'Laporkan', 'Laporkan views konten lewat dashboard'],
+            ['5️⃣', 'Dapat Cuan!', 'Komisi views + komisi affiliate'],
           ].map(([num, title, desc]) => (
             <div key={title} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '20px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 28, marginBottom: 8 }}>{num}</div>
