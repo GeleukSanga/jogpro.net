@@ -19,6 +19,7 @@ export default function AffiliatorPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -270,11 +271,14 @@ export default function AffiliatorPage() {
         </motion.div>
       </div>
 
-      {/* FAQ */}
+      {/* FAQ Accordion */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
         style={{ maxWidth: 700, margin: '0 auto', paddingTop: 48 }}>
-        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 24, textAlign: 'center', marginBottom: 32 }}>❓ FAQ — Pertanyaan Umum</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+          <span style={{ display: 'inline-block', background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.5)', borderRadius: 999, padding: '4px 16px', color: '#c4b5fd', fontSize: 13, fontWeight: 600, marginBottom: 16 }}>❓ FAQ</span>
+        </div>
+        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 28, textAlign: 'center', marginBottom: 36 }}>Pertanyaan Umum</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
             ['💸', 'Kapan payout / pencairan komisi?', 'Setiap akhir pekan (Sabtu/Minggu). Saldo akan otomatis ditransfer ke rekening/ewallet kamu.'],
             ['📊', 'Berapa minimal saldo untuk payout?', 'Minimal saldo Rp10.000. Kalau di bawah itu, saldo akan diakumulasi ke minggu berikutnya.'],
@@ -284,17 +288,55 @@ export default function AffiliatorPage() {
             ['🛒', 'Bagaimana cara dapat komisi affiliate?', 'Gunakan affiliate link TikTok Shop & Shopee yang kami sediakan di dashboard. Setiap penjualan lewat link kamu = komisi hingga 20%.'],
             ['👥', 'Apakah follower TikTok wajib 600?', 'Ya, karena untuk generate affiliate link TikTok Shop butuh minimal 600 followers. Tapi kamu tetap bisa posting di IG/FB/Threads ya.'],
             ['📦', 'Berapa lama pengiriman sampel?', '2-3 hari kerja via JNT/Lion Parcel. Gratis ongkir untuk seluruh Pulau Jawa.'],
-          ].map(([emoji, q, a]) => (
-            <div key={q} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '20px 24px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <span style={{ fontSize: 22, flexShrink: 0 }}>{emoji}</span>
-                <div>
-                  <h4 style={{ color: '#fff', fontWeight: 700, fontSize: 15, margin: '0 0 6px 0' }}>{q}</h4>
-                  <p style={{ color: '#a78bfa', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{a}</p>
+          ].map(([emoji, q, a], i) => {
+            const isOpen = openFaq === i
+            return (
+              <div key={q}
+                onClick={() => setOpenFaq(isOpen ? null : i)}
+                style={{ 
+                  background: isOpen ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.04)', 
+                  border: `1px solid ${isOpen ? 'rgba(139,92,246,0.4)' : 'rgba(255,255,255,0.08)'}`, 
+                  borderRadius: 16, 
+                  padding: '18px 24px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  backdropFilter: 'blur(12px)',
+                }}
+                onMouseEnter={e => { if (!isOpen) { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)' }}}
+                onMouseLeave={e => { if (!isOpen) { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <span style={{ fontSize: 24, flexShrink: 0 }}>{emoji}</span>
+                  <h4 style={{ color: isOpen ? '#f0abfc' : '#fff', fontWeight: 700, fontSize: 15, margin: 0, flex: 1, transition: 'color 0.3s' }}>{q}</h4>
+                  <motion.span
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ color: isOpen ? '#a78bfa' : '#6b7280', fontSize: 18, flexShrink: 0, lineHeight: 1 }}
+                  >
+                    ▼
+                  </motion.span>
                 </div>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                      animate={{ height: 'auto', opacity: 1, marginTop: 14 }}
+                      exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      <div style={{ 
+                        borderTop: '1px solid rgba(139,92,246,0.2)', 
+                        paddingTop: 14,
+                      }}>
+                        <p style={{ color: '#c4b5fd', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{a}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Final CTA */}
