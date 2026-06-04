@@ -114,6 +114,77 @@ export default function AffiliatorPage() {
         </div>
       </motion.div>
 
+      {/* Cara Kerja & Komisi */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+        style={{ maxWidth: 800, margin: '0 auto 48px' }}>
+
+        {/* How It Works */}
+        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 24, textAlign: 'center', marginBottom: 24 }}>🔄 Cara Kerja</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 36 }}>
+          {[
+            ['1️⃣', 'Daftar', 'Isi form + pilih 3 sampel gratis'],
+            ['2️⃣', 'Terima Sampel', 'Kami kirim produk fisik dalam 2-3 hari'],
+            ['3️⃣', 'Bikin Konten', 'Review produk, upload ke TikTok/IG/FB/Threads'],
+            ['4️⃣', 'Dapat Cuan!', 'Komisi views + komisi affiliate'],
+          ].map(([num, title, desc]) => (
+            <div key={title} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '20px 16px', textAlign: 'center' }}>
+              <div style={{ fontSize: 28, marginBottom: 8 }}>{num}</div>
+              <div style={{ color: '#fff', fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{title}</div>
+              <div style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5 }}>{desc}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Platform */}
+        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 24, textAlign: 'center', marginBottom: 24 }}>📱 Platform yang Bisa Digunakan</h2>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 36 }}>
+          {[
+            ['🎵', 'TikTok', '#ff0050'],
+            ['📸', 'Instagram', '#E1306C'],
+            ['📘', 'Facebook', '#1877F2'],
+            ['🧵', 'Threads', '#000'],
+          ].map(([emoji, name, color]) => (
+            <div key={name} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 22 }}>{emoji}</span>
+              <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{name}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Requirements */}
+        <div style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 16, padding: '20px 24px', marginBottom: 24 }}>
+          <h3 style={{ color: '#f0abfc', fontWeight: 700, fontSize: 18, marginBottom: 12 }}>⚠️ Syarat Wajib</h3>
+          <ul style={{ color: '#c4b5fd', fontSize: 14, lineHeight: 2, margin: 0, paddingLeft: 20 }}>
+            <li>Punya akun <strong style={{ color: '#fff' }}>TikTok yang eligible TikTok Affiliate</strong> (min. 600 followers)</li>
+            <li>Punya akun <strong style={{ color: '#fff' }}>Shopee Affiliate yang aktif</strong></li>
+            <li>Bersedia posting minimal 1 konten dalam 7 hari setelah menerima sampel</li>
+          </ul>
+        </div>
+
+        {/* Commission */}
+        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 24, textAlign: 'center', marginBottom: 24 }}>💰 Sistem Komisi</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
+          <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(236,72,153,0.2))', border: '1px solid rgba(139,92,246,0.4)', borderRadius: 16, padding: '24px', textAlign: 'center' }}>
+            <div style={{ fontSize: 36, marginBottom: 8 }}>👀</div>
+            <div style={{ color: '#fff', fontWeight: 800, fontSize: 28, marginBottom: 4 }}>Rp5.000</div>
+            <div style={{ color: '#c4b5fd', fontSize: 16, fontWeight: 600, marginBottom: 8 }}>per 1.000 views</div>
+            <div style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5 }}>Posting konten produk di akunmu, setiap 1.000 views = Rp5.000 langsung dari Jogpro</div>
+          </div>
+          <div style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(59,130,246,0.15))', border: '1px solid rgba(34,197,94,0.4)', borderRadius: 16, padding: '24px', textAlign: 'center' }}>
+            <div style={{ fontSize: 36, marginBottom: 8 }}>🛒</div>
+            <div style={{ color: '#fff', fontWeight: 800, fontSize: 28, marginBottom: 4 }}>Hingga 20%</div>
+            <div style={{ color: '#86efac', fontSize: 16, fontWeight: 600, marginBottom: 8 }}>komisi affiliate</div>
+            <div style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5 }}>Gunakan affiliate link TikTok Shop & Shopee di kontenmu. Komisi hingga 20% per penjualan!</div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: '#f0abfc', fontSize: 16, fontWeight: 700, marginBottom: 4 }}>🔥 Double Cuan!</p>
+          <p style={{ color: '#c4b5fd', fontSize: 14, margin: 0 }}>Dapat komisi views dari Jogpro <strong style={{ color: '#fff' }}>+</strong> komisi affiliate dari TikTok Shop & Shopee sekaligus!</p>
+        </div>
+      </motion.div>
+
       {/* Form */}
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
         {/* Progress */}
