@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -9,57 +10,117 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleLogin(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     setError('')
+    setLoading(true)
     try {
       const res = await fetch('/api/affiliator/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Login gagal')
       localStorage.setItem('affiliator_token', data.token)
       localStorage.setItem('affiliator_name', data.full_name)
       router.push('/affiliator/dashboard')
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Login gagal')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Terjadi kesalahan')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a0a0a 0%, #1a0533 50%, #0a0a0a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-      <div style={{ width: '100%', maxWidth: 400 }}>
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>🔐</div>
-          <h1 style={{ color: '#fff', fontWeight: 900, fontSize: 28, marginBottom: 8 }}>Login Affiliator</h1>
-          <p style={{ color: '#9ca3af', fontSize: 15 }}>Masuk ke dashboard affiliator kamu</p>
-        </div>
-        <div style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: 32 }}>
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ color: '#c4b5fd', fontSize: 14, fontWeight: 600, display: 'block', marginBottom: 8 }}>Username</label>
-              <input value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} placeholder="username kamu" required
-                style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, padding: '12px 16px', color: '#fff', fontSize: 16, outline: 'none', boxSizing: 'border-box' }} />
-            </div>
-            <div style={{ marginBottom: 24 }}>
-              <label style={{ color: '#c4b5fd', fontSize: 14, fontWeight: 600, display: 'block', marginBottom: 8 }}>Password</label>
-              <input type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="••••••••" required
-                style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, padding: '12px 16px', color: '#fff', fontSize: 16, outline: 'none', boxSizing: 'border-box' }} />
-            </div>
-            {error && <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 10, padding: '10px 14px', color: '#fca5a5', fontSize: 14, marginBottom: 16 }}>{error}</div>}
-            <button type="submit" disabled={loading}
-              style={{ width: '100%', padding: '14px', background: loading ? 'rgba(139,92,246,0.4)' : 'linear-gradient(135deg,#8B5CF6,#EC4899)', border: 'none', borderRadius: 12, color: '#fff', fontSize: 16, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}>
-              {loading ? '⏳ Masuk...' : '🚀 Login'}
-            </button>
-          </form>
-          <p style={{ textAlign: 'center', color: '#6b7280', fontSize: 14, marginTop: 24 }}>Belum daftar? <Link href="/affiliator" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 600 }}>Daftar di sini →</Link></p>
-        </div>
+    <div className="min-h-screen bg-[#0F172A] text-white flex items-center justify-center px-4">
+      {/* Background glow */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px]" />
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 w-full max-w-md"
+      >
+        {/* Header */}
+        <div className="text-center mb-8">
+          <span className="text-xs font-semibold tracking-[0.3em] text-blue-400 uppercase">Jogpro Creator Program</span>
+          <h1 className="mt-3 text-3xl font-black">
+            Selamat{' '}
+            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Datang
+            </span>
+          </h1>
+          <p className="mt-2 text-slate-400 text-sm">Login ke dashboard affiliatormu</p>
+        </div>
+
+        {/* Card */}
+        <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-8 space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Username</label>
+              <input
+                type="text"
+                placeholder="Username-mu"
+                value={form.username}
+                onChange={e => setForm(p => ({ ...p, username: e.target.value }))}
+                required
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Password</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
+                required
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-sm"
+              />
+            </div>
+
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3"
+                >
+                  ⚠️ {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.button
+              type="submit"
+              disabled={loading}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              className="w-full py-4 rounded-xl font-bold text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20"
+            >
+              {loading ? '⏳ Memproses...' : '🔐 Login'}
+            </motion.button>
+          </form>
+
+          <p className="text-center text-sm text-slate-500">
+            Belum daftar?{' '}
+            <Link href="/affiliator" className="text-blue-400 hover:text-blue-300 font-semibold">
+              Daftar di sini
+            </Link>
+          </p>
+        </div>
+
+        {/* Info */}
+        <p className="text-center text-xs text-slate-600 mt-6">
+          Username & password dikirim via WhatsApp setelah pendaftaran diapprove
+        </p>
+      </motion.div>
     </div>
   )
 }

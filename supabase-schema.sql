@@ -35,10 +35,12 @@ create table if not exists affiliator_claims (
   video_url text not null,
   screenshot_url text,
   views_count integer not null,
+  milestone integer not null, -- kelipatan 500: 500, 1000, 1500, dst.
   status text default 'pending' check (status in ('pending','approved','rejected','paid')),
-  commission_amount integer,
+  commission_amount integer default 2500,
   created_at timestamptz default now(),
-  reviewed_at timestamptz
+  reviewed_at timestamptz,
+  unique(affiliator_id, video_url, milestone) -- cegah klaim milestone yang sama 2x
 );
 
 -- Disable RLS for now (enable later with proper policies)

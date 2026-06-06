@@ -1,201 +1,248 @@
 'use client'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 
 const PRODUCTS = [
-  { name: 'Oreo Cable Winder', price: 'Rp20.000', emoji: '🍪' },
-  { name: 'Compact Cable Winder', price: 'Rp20.000', emoji: '🔌' },
-  { name: 'Phone Stand Keychain', price: 'Rp15.000', emoji: '📱' },
-  { name: 'Clickable Gantungan Tas Custom', price: 'Mulai Rp15.000', emoji: '🏷️' },
+  { id: 'oreo', name: 'Oreo Cable Winder', emoji: '🎮' },
+  { id: 'compact', name: 'Compact Cable Winder', emoji: '🔌' },
+  { id: 'stand', name: 'Phone Stand Keychain', emoji: '📱' },
 ]
 
-const STEPS = ['Data Diri', 'Sosial Media', 'Pilih Sampel']
+const BENEFITS = [
+  { icon: '💰', title: 'Komisi 20% per Checkout', desc: 'Setiap checkout via link affiliatemu di TikTok/Shopee, kamu dapat 20% dari GMV.' },
+  { icon: '🎯', title: 'Rp 2.500 per 500 Views', desc: 'Setiap video tembus kelipatan 500 views, kamu bisa klaim komisi views langsung.' },
+  { icon: '📦', title: 'Sampel Produk Gratis', desc: 'Affiliator approved dapat produk Jogpro gratis untuk dibuat konten.' },
+]
 
-export default function AffiliatorPage() {
-  const [step, setStep] = useState(0)
-  const [form, setForm] = useState({ full_name: '', whatsapp: '', city: '', tiktok_username: '', tiktok_followers: '', tiktok_url: '', instagram_url: '' })
+export default function AffiliatorRegisterPage() {
+  const [form, setForm] = useState({
+    full_name: '', whatsapp: '', city: '',
+    tiktok_username: '', tiktok_followers: '',
+    tiktok_url: '', instagram_url: '',
+  })
   const [samples, setSamples] = useState<string[]>([])
-  const [agreed, setAgreed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({ ...form, [e.target.name]: e.target.value })
+  const toggleSample = (name: string) => {
+    setSamples(prev =>
+      prev.includes(name) ? prev.filter(s => s !== name) : prev.length < 3 ? [...prev, name] : prev
+    )
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     setError('')
-  }
-
-  function toggleSample(name: string) {
-    if (samples.includes(name)) {
-      setSamples(samples.filter(s => s !== name))
-    } else {
-      if (samples.length >= 3) { setError('Maksimal 3 sampel'); return }
-      setSamples([...samples, name])
-      setError('')
-    }
-  }
-
-  function validateStep() {
-    if (step === 0) {
-      if (!form.full_name || !form.whatsapp || !form.city) { setError('Semua field wajib diisi'); return false }
-      if (!/^08\d{8,11}$/.test(form.whatsapp)) { setError('Format WA: 08xx (10-13 digit)'); return false }
-    }
-    if (step === 1) {
-      if (!form.tiktok_username || !form.tiktok_followers) { setError('Username dan jumlah followers wajib diisi'); return false }
-      if (parseInt(form.tiktok_followers) < 600) { setError('Minimal 600 followers TikTok untuk mendaftar'); return false }
-    }
-    if (step === 2) {
-      if (samples.length === 0) { setError('Pilih minimal 1 sampel'); return false }
-      if (!agreed) { setError('Kamu harus menyetujui perjanjian'); return false }
-    }
-    return true
-  }
-
-  function nextStep() {
-    if (!validateStep()) return
-    setStep(s => s + 1)
-    setError('')
-  }
-
-  async function handleSubmit() {
-    if (!validateStep()) return
     setLoading(true)
-    setError('')
     try {
       const res = await fetch('/api/affiliator/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, samples })
+        body: JSON.stringify({ ...form, samples }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Gagal mendaftar')
+      if (!res.ok) throw new Error(data.error || 'Terjadi kesalahan')
       setSuccess(true)
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Terjadi kesalahan')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Terjadi kesalahan')
     } finally {
       setLoading(false)
     }
   }
 
-  if (success) return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a0a0a 0%, #1a0533 50%, #0a0a0a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-      <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ textAlign: 'center', maxWidth: 480 }}>
-        <div style={{ fontSize: 80, marginBottom: 24 }}>🎉</div>
-        <h1 style={{ fontSize: 32, fontWeight: 900, color: '#fff', marginBottom: 12 }}>Pendaftaran Berhasil!</h1>
-        <p style={{ color: '#c4b5fd', fontSize: 18, marginBottom: 24, lineHeight: 1.6 }}>Tim Jogpro akan menghubungi kamu via WhatsApp dalam <strong style={{ color: '#f0abfc' }}>24 jam</strong> untuk konfirmasi dan pengiriman sampel.</p>
-        <div style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.4)', borderRadius: 16, padding: '20px' }}>
-          <p style={{ color: '#e9d5ff', margin: 0, fontSize: 14 }}>💜 Terima kasih sudah bergabung sebagai Affiliator Jogpro! Siapkan konten terbaikmu ya!</p>
-        </div>
-      </motion.div>
-    </div>
-  )
-
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a0a0a 0%, #1a0533 50%, #0a0a0a 100%)', padding: '2rem 1rem' }}>
-      {/* Hero */}
-      <motion.div initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 48px' }}>
-        <div style={{ display: 'inline-block', background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.5)', borderRadius: 999, padding: '6px 20px', marginBottom: 16 }}>
-          <span style={{ color: '#c4b5fd', fontSize: 14, fontWeight: 600 }}>✨ Program Affiliator Jogpro</span>
-        </div>
-        <h1 style={{ fontSize: 'clamp(32px,6vw,56px)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 16 }}>
-          Konten Kamu = <span style={{ background: 'linear-gradient(90deg,#8B5CF6,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Cuan Terus! 🚀</span>
-        </h1>
-        <p style={{ color: '#a78bfa', fontSize: 18, lineHeight: 1.6, marginBottom: 32 }}>Dapat produk 3D printed gratis, posting di TikTok/IG, dapat komisi dari setiap 1.000 views. Gampang, fleksibel, menguntungkan!</p>
+    <div className="min-h-screen bg-[#0F172A] text-white overflow-x-hidden">
+      {/* Background glow */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[100px]" />
+      </div>
 
-        {/* Stats */}
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
-          {[['🎁', '3 Sampel', 'Gratis'], ['💰', 'Rp5.000', '/1.000 views'], ['⏰', 'Fleksibel', 'Kapan aja']].map(([emoji, val, label]) => (
-            <div key={label} style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '16px 24px', minWidth: 100 }}>
-              <div style={{ fontSize: 28 }}>{emoji}</div>
-              <div style={{ color: '#fff', fontWeight: 800, fontSize: 18 }}>{val}</div>
-              <div style={{ color: '#9ca3af', fontSize: 12 }}>{label}</div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Form */}
-      <div style={{ maxWidth: 560, margin: '0 auto' }}>
-        {/* Progress */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 32, alignItems: 'center' }}>
-          {STEPS.map((s, i) => (
-            <div key={s} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14, background: i <= step ? 'linear-gradient(135deg,#8B5CF6,#EC4899)' : 'rgba(255,255,255,0.1)', color: i <= step ? '#fff' : '#6b7280', transition: 'all 0.3s' }}>{i + 1}</div>
-              <span style={{ color: i <= step ? '#c4b5fd' : '#6b7280', fontSize: 12, fontWeight: 600 }}>{s}</span>
-              {i < STEPS.length - 1 && <div style={{ position: 'absolute', width: 0 }} />}
-            </div>
-          ))}
-        </div>
-
-        {/* Card */}
-        <motion.div key={step} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-          style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: '32px', marginBottom: 16 }}>
-
-          {step === 0 && (
-            <div>
-              <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 22, marginBottom: 24 }}>👤 Data Diri</h2>
-              {[['full_name', 'Nama Lengkap', 'Nama kamu...', 'text'], ['whatsapp', 'Nomor WhatsApp', '08xxxxxxxxxx', 'tel'], ['city', 'Kota/Kabupaten', 'Jakarta, Bandung, dll...', 'text']].map(([name, label, placeholder, type]) => (
-                <div key={name} style={{ marginBottom: 20 }}>
-                  <label style={{ color: '#c4b5fd', fontSize: 14, fontWeight: 600, display: 'block', marginBottom: 8 }}>{label}</label>
-                  <input name={name} type={type} placeholder={placeholder} value={form[name as keyof typeof form]} onChange={handleChange}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, padding: '12px 16px', color: '#fff', fontSize: 16, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {step === 1 && (
-            <div>
-              <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 22, marginBottom: 24 }}>📱 Akun Sosial Media</h2>
-              {[['tiktok_username', 'Username TikTok', '@username_kamu', 'text'], ['tiktok_followers', 'Jumlah Followers TikTok', 'Contoh: 1200 (min 600)', 'number'], ['tiktok_url', 'Link Profil TikTok', 'https://tiktok.com/@username', 'url'], ['instagram_url', 'Link Instagram (opsional)', 'https://instagram.com/username', 'url']].map(([name, label, placeholder, type]) => (
-                <div key={name} style={{ marginBottom: 20 }}>
-                  <label style={{ color: '#c4b5fd', fontSize: 14, fontWeight: 600, display: 'block', marginBottom: 8 }}>{label} {name === 'instagram_url' ? <span style={{ color: '#6b7280', fontSize: 12 }}>(opsional)</span> : ''}</label>
-                  <input name={name} type={type} placeholder={placeholder} value={form[name as keyof typeof form]} onChange={handleChange}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, padding: '12px 16px', color: '#fff', fontSize: 16, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              ))}
-              <div style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 12, padding: '12px 16px' }}>
-                <p style={{ color: '#c4b5fd', fontSize: 13, margin: 0 }}>ℹ️ Minimal 600 followers TikTok untuk bisa generate affiliate link TikTok</p>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div>
-              <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 22, marginBottom: 8 }}>🎁 Pilih Sampel Gratis</h2>
-              <p style={{ color: '#9ca3af', fontSize: 14, marginBottom: 24 }}>Pilih maksimal 3 produk yang ingin kamu review</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-                {PRODUCTS.map(p => {
-                  const selected = samples.includes(p.name)
-                  return (
-                    <div key={p.name} onClick={() => toggleSample(p.name)} style={{ background: selected ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.05)', border: `2px solid ${selected ? '#8B5CF6' : 'rgba(255,255,255,0.1)'}`, borderRadius: 16, padding: '16px 12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
-                      <div style={{ fontSize: 32, marginBottom: 8 }}>{p.emoji}</div>
-                      <div style={{ color: '#fff', fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{p.name}</div>
-                      <div style={{ color: '#a78bfa', fontSize: 12 }}>{p.price}</div>
-                      {selected && <div style={{ marginTop: 8, color: '#8B5CF6', fontSize: 20 }}>✓</div>}
-                    </div>
-                  )
-                })}
-              </div>
-              <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '16px', marginBottom: 16 }}>
-                <label style={{ display: 'flex', gap: 12, alignItems: 'flex-start', cursor: 'pointer' }}>
-                  <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} style={{ marginTop: 2, width: 18, height: 18, accentColor: '#8B5CF6' }} />
-                  <span style={{ color: '#c4b5fd', fontSize: 14, lineHeight: 1.5 }}>Saya setuju akan posting minimal 1 video dalam <strong>7 hari</strong> setelah menerima sampel dan melaporkan views sesuai ketentuan program affiliator Jogpro.</span>
-                </label>
-              </div>
-            </div>
-          )}
-
-          {error && <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 10, padding: '10px 14px', color: '#fca5a5', fontSize: 14, marginBottom: 16 }}>{error}</div>}
-
-          <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-            {step > 0 && <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, padding: '14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer' }}>← Kembali</button>}
-            {step < 2
-              ? <button onClick={nextStep} style={{ flex: 2, padding: '14px', background: 'linear-gradient(135deg,#8B5CF6,#EC4899)', border: 'none', borderRadius: 12, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}>Lanjut →</button>
-              : <button onClick={handleSubmit} disabled={loading} style={{ flex: 2, padding: '14px', background: loading ? 'rgba(139,92,246,0.4)' : 'linear-gradient(135deg,#8B5CF6,#EC4899)', border: 'none', borderRadius: 12, color: '#fff', fontSize: 16, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}>{loading ? '⏳ Mengirim...' : '🚀 Daftar Sekarang!'}</button>
-            }
-          </div>
+      <div className="relative z-10 max-w-2xl mx-auto px-4 py-16">
+        {/* Logo */}
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
+          <span className="text-sm font-semibold tracking-[0.3em] text-blue-400 uppercase">Jogpro Creator Program</span>
+          <h1 className="mt-3 text-4xl md:text-5xl font-black leading-tight">
+            Jadi{' '}
+            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-yellow-400 bg-clip-text text-transparent">
+              Affiliator
+            </span>
+            <br />Jogpro Sekarang
+          </h1>
+          <p className="mt-4 text-slate-400 text-lg">Hasilkan komisi dari setiap konten yang kamu buat</p>
         </motion.div>
+
+        {/* Benefits */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+          {BENEFITS.map((b, i) => (
+            <motion.div
+              key={b.title}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.1 }}
+              className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-5"
+            >
+              <div className="text-3xl mb-3">{b.icon}</div>
+              <div className="font-bold text-sm text-white mb-1">{b.title}</div>
+              <div className="text-xs text-slate-400 leading-relaxed">{b.desc}</div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Form / Success */}
+        <AnimatePresence mode="wait">
+          {success ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="rounded-3xl border border-green-500/30 bg-green-500/10 backdrop-blur p-10 text-center"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                className="text-6xl mb-4"
+              >✅</motion.div>
+              <h2 className="text-2xl font-black text-green-400 mb-2">Pendaftaran Masuk!</h2>
+              <p className="text-slate-300 leading-relaxed">
+                Kami akan menghubungimu via WhatsApp dalam <strong>1×24 jam</strong> setelah review pendaftaranmu.
+              </p>
+            </motion.div>
+          ) : (
+            <motion.form
+              key="form"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              onSubmit={handleSubmit}
+              className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-8 space-y-5"
+            >
+              <h2 className="text-xl font-bold text-white mb-2">Form Pendaftaran</h2>
+
+              {/* Fields */}
+              {[
+                { key: 'full_name', label: 'Nama Lengkap', placeholder: 'Nama kamu', type: 'text' },
+                { key: 'whatsapp', label: 'No. WhatsApp', placeholder: '08xxxxxxxxxx', type: 'tel' },
+                { key: 'city', label: 'Kota', placeholder: 'Domisili kamu', type: 'text' },
+              ].map(f => (
+                <div key={f.key}>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">{f.label}</label>
+                  <input
+                    type={f.type}
+                    placeholder={f.placeholder}
+                    value={form[f.key as keyof typeof form]}
+                    onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                    required
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-sm"
+                  />
+                </div>
+              ))}
+
+              {/* TikTok Username */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Username TikTok</label>
+                <div className="flex">
+                  <span className="bg-white/10 border border-white/10 border-r-0 rounded-l-xl px-3 flex items-center text-slate-400 text-sm">@</span>
+                  <input
+                    type="text"
+                    placeholder="usernamemu"
+                    value={form.tiktok_username}
+                    onChange={e => setForm(p => ({ ...p, tiktok_username: e.target.value }))}
+                    required
+                    className="flex-1 bg-white/5 border border-white/10 rounded-r-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Followers */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Jumlah Followers TikTok <span className="text-yellow-400">(Min. 600)</span></label>
+                <input
+                  type="number"
+                  placeholder="Contoh: 1500"
+                  value={form.tiktok_followers}
+                  onChange={e => setForm(p => ({ ...p, tiktok_followers: e.target.value }))}
+                  required min={600}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-sm"
+                />
+              </div>
+
+              {/* TikTok URL */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">URL Profil TikTok</label>
+                <input
+                  type="url"
+                  placeholder="https://tiktok.com/@usernamemu"
+                  value={form.tiktok_url}
+                  onChange={e => setForm(p => ({ ...p, tiktok_url: e.target.value }))}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-sm"
+                />
+              </div>
+
+              {/* Instagram */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">URL Instagram <span className="text-slate-500">(opsional)</span></label>
+                <input
+                  type="url"
+                  placeholder="https://instagram.com/usernamemu"
+                  value={form.instagram_url}
+                  onChange={e => setForm(p => ({ ...p, instagram_url: e.target.value }))}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-sm"
+                />
+              </div>
+
+              {/* Sampel */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Pilih Sampel Produk <span className="text-yellow-400">(1-3 produk)</span></label>
+                <div className="grid grid-cols-3 gap-3">
+                  {PRODUCTS.map(p => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => toggleSample(p.name)}
+                      className={`rounded-xl border p-3 text-center transition text-xs font-semibold ${
+                        samples.includes(p.name)
+                          ? 'border-blue-500 bg-blue-500/20 text-blue-300'
+                          : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/30'
+                      }`}
+                    >
+                      <div className="text-2xl mb-1">{p.emoji}</div>
+                      {p.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Error */}
+              {error && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3">
+                  ⚠️ {error}
+                </motion.div>
+              )}
+
+              {/* Submit */}
+              <motion.button
+                type="submit"
+                disabled={loading || samples.length === 0}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                className="w-full py-4 rounded-xl font-bold text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20"
+              >
+                {loading ? '⏳ Mengirim...' : '🚀 Daftar Sekarang'}
+              </motion.button>
+
+              <p className="text-center text-sm text-slate-500">
+                Sudah punya akun?{' '}
+                <Link href="/affiliator/login" className="text-blue-400 hover:text-blue-300 font-semibold">
+                  Login di sini
+                </Link>
+              </p>
+            </motion.form>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
