@@ -334,6 +334,23 @@ export default function AffiliatorPage() {
                   )
                 })}
               </div>
+
+              {/* TikTok Shop Option */}
+              <div onClick={toggleTiktokshop} style={{ background: tiktokshopSelected ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.05)', border: `2px solid ${tiktokshopSelected ? '#8B5CF6' : 'rgba(255,255,255,0.1)'}`, borderRadius: 16, padding: '16px 12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center', marginBottom: 12 }}>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>🛒</div>
+                <div style={{ color: '#fff', fontWeight: 700, fontSize: 13, marginBottom: 4 }}>Produk TikTok Shop</div>
+                <div style={{ color: '#a78bfa', fontSize: 12 }}>Upload screenshot</div>
+                {tiktokshopSelected && <div style={{ marginTop: 8, color: '#8B5CF6', fontSize: 20 }}>✓</div>}
+              </div>
+              {tiktokshopSelected && (
+                <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
+                  <p style={{ color: '#c4b5fd', fontSize: 13, marginBottom: 10 }}>📸 Upload screenshot produk yang kamu mau dari TikTok Shop:</p>
+                  <input type="file" accept="image/*" onChange={handleTiktokshopFile}
+                    style={{ width: '100%', color: '#9ca3af', fontSize: 13, marginBottom: 8 }} />
+                  {tiktokshopFileName && <p style={{ color: '#86efac', fontSize: 12, margin: 0 }}>✅ {tiktokshopFileName}</p>}
+                </div>
+              )}
+
               <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '16px', marginBottom: 16 }}>
                 <label style={{ display: 'flex', gap: 12, alignItems: 'flex-start', cursor: 'pointer' }}>
                   <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} style={{ marginTop: 2, width: 18, height: 18, accentColor: '#8B5CF6' }} />

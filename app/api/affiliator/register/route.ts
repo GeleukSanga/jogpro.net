@@ -17,7 +17,7 @@ async function sendTelegram(text: string) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { full_name, whatsapp, city, tiktok_username, tiktok_followers, tiktok_url, instagram_url, samples } = body
+    const { full_name, whatsapp, city, tiktok_username, tiktok_followers, tiktok_url, instagram_url, samples, tiktokshop_screenshot, tiktokshop_filename } = body
 
     // Validasi
     if (!full_name || !whatsapp || !city || !tiktok_username || !tiktok_followers) {
@@ -60,6 +60,21 @@ export async function POST(req: NextRequest) {
     const now = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
     const sampelList = samples.join(', ')
     await sendTelegram(`🎯 <b>PENDAFTAR AFFILIATOR BARU!</b>\n\nNama: ${safeName}\nWA: ${whatsapp.trim()}\nKota: ${safeCity}\nTikTok: @${safeUsername} (${tiktok_followers} followers)\n${instagram_url ? `Instagram: ${instagram_url}\n` : ''}Sampel: ${sampelList}\nWaktu: ${now} WIB\n\n👉 <a href="https://jogpro.net/admin">Cek di Admin Panel</a>`)
+
+    // Kirim screenshot TikTok Shop jika ada
+    if (tiktokshop_screenshot) {
+      try {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            photo: `data:image/jpeg;base64,${tiktokshop_screenshot}`,
+            caption: `🛒 Screenshot TikTok Shop dari ${safeName} — ${tiktokshop_filename || 'tanpa nama'}`
+          })
+        })
+      } catch {}
+    }
 
     return NextResponse.json({ success: true })
   } catch (err: unknown) {
