@@ -159,6 +159,12 @@ export default function AffiliatorPage() {
             </div>
           ))}
         </div>
+        <div style={{ textAlign: 'center', marginTop: 28 }}>
+          <a href="https://vt.tiktok.com/ZSQNj7fS8/?page=Mall" target="_blank" rel="noopener noreferrer"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#8B5CF6,#EC4899)', color: '#fff', fontWeight: 700, fontSize: 15, padding: '12px 28px', borderRadius: 40, textDecoration: 'none', transition: 'all 0.3s', boxShadow: '0 4px 20px rgba(139,92,246,0.3)' }}>
+            🛒 Cek Produk Selengkapnya di TikTok Shop
+          </a>
+        </div>
       </motion.div>
 
       {/* Cara Kerja & Komisi */}
