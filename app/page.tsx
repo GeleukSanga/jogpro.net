@@ -3,11 +3,30 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const PRODUCTS = [
-  { name: 'Oreo Cable Winder', price: 'Rp20.000', emoji: '🍪' },
-  { name: 'Compact Cable Winder', price: 'Rp20.000', emoji: '🔌' },
-  { name: 'Phone Stand Keychain', price: 'Rp15.000', emoji: '📱' },
-  { name: 'Clickable Gantungan Tas Custom', price: 'Mulai Rp15.000', emoji: '🏷️' },
+  { name: 'Oreo Cable Winder', price: 'Rp20.000', emoji: '🍪', desc: 'Bikin kabel charger kamu rapi & estetik ala biskuit Oreo.', images: ['/products/elwycvukkfjqd1iiy4di.jpg','/products/lkeennsiv4p8uz3aaapm.jpg'] },
+  { name: 'Compact Cable Winder', price: 'Rp20.000', emoji: '🔌', desc: 'Solusi praktis buat kabel headset/data yang sering kusut.', images: ['/products/ozytfrgizq0zquxaaqqq.jpg','/products/ph2quvrf6mnopsj9dolx.jpg'] },
+  { name: 'Phone Stand Keychain', price: 'Rp15.000', emoji: '📱', desc: 'Stand HP mini yang bisa digantung di kunci. Portabel & stylish!', images: ['/products/tbqewyyovshrh7b9zgif.jpg'] },
+  { name: 'Clickable Gantungan Tas Custom', price: 'Mulai Rp15.000', emoji: '🏷️', desc: 'Gantungan tas custom nama 3D yang bisa diklik. Identitas unik tas kamu!', images: ['/products/clickable_hero.png','/products/clickable_usage_collage.jpg'] },
 ]
+
+const ProductSlider = ({ images }: { images: string[] }) => {
+  const [idx, setIdx] = useState(0)
+  return (
+    <div style={{ position: 'relative', height: 240, overflow: 'hidden', borderRadius: 14, background: '#0a0a0a' }}>
+      <AnimatePresence mode='wait'>
+        <motion.img key={idx} src={images[idx]} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      </AnimatePresence>
+      {images.length > 1 && (
+        <div style={{ position: 'absolute', bottom: 8, right: 8, display: 'flex', gap: 4 }}>
+          {images.map((_, i) => (
+            <button key={i} onClick={() => setIdx(i)} style={{ width: 10, height: 10, borderRadius: '50%', border: 'none', background: i === idx ? '#ec4899' : 'rgba(255,255,255,0.3)', cursor: 'pointer' }} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 const STEPS = ['Data Diri', 'Sosial Media', 'Pilih Sampel']
 
@@ -110,6 +129,33 @@ export default function AffiliatorPage() {
               <div style={{ fontSize: 28 }}>{emoji}</div>
               <div style={{ color: '#fff', fontWeight: 800, fontSize: 18 }}>{val}</div>
               <div style={{ color: '#9ca3af', fontSize: 12 }}>{label}</div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Produk Showcase */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        style={{ maxWidth: 1000, margin: '0 auto 48px' }}>
+        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 28, textAlign: 'center', marginBottom: 8 }}>🛍️ Produk Jogpro</h2>
+        <p style={{ color: '#9ca3af', fontSize: 14, textAlign: 'center', marginBottom: 32 }}>3D Printed • Fungsional • Harga Terjangkau</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 20 }}>
+          {PRODUCTS.map((p) => (
+            <div key={p.name} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden', transition: 'all 0.3s', cursor: 'default' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(139,92,246,0.4)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)' }}>
+              <ProductSlider images={p.images} />
+              <div style={{ padding: '16px 18px 20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <span style={{ fontSize: 24 }}>{p.emoji}</span>
+                  <h3 style={{ color: '#fff', fontWeight: 700, fontSize: 16, margin: 0 }}>{p.name}</h3>
+                </div>
+                <p style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5, marginBottom: 12 }}>{p.desc}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ background: 'linear-gradient(90deg,#8B5CF6,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, fontSize: 18 }}>{p.price}</span>
+                  <span style={{ color: '#6b7280', fontSize: 11 }}>⭐ 4.9</span>
+                </div>
+              </div>
             </div>
           ))}
         </div>
