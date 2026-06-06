@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 const PRODUCTS = [
   { name: 'Oreo Cable Winder', price: 'Rp20.000', emoji: '🍪', desc: 'Bikin kabel charger kamu rapi & estetik ala biskuit Oreo.', images: ['/products/elwycvukkfjqd1iiy4di.jpg','/products/lkeennsiv4p8uz3aaapm.jpg'] },
   { name: 'Compact Cable Winder', price: 'Rp20.000', emoji: '🔌', desc: 'Solusi praktis buat kabel headset/data yang sering kusut.', images: ['/products/compact_winder_hero.jpg'] },
-  { name: 'Phone Stand Keychain', price: 'Rp15.000', emoji: '📱', desc: 'Stand HP mini yang bisa digantung di kunci. Portabel & stylish!', images: ['/products/tbqewyyovshrh7b9zgif.jpg'] },
+  { name: 'Phone Stand Keychain', price: 'Rp15.000', emoji: '📱', desc: 'Stand HP mini yang bisa digantung di kunci. Portabel & stylish!', images: ['/products/phone_stand_hero.jpg'] },
   { name: 'Clickable Gantungan Tas Custom', price: 'Mulai Rp15.000', emoji: '🏷️', desc: 'Gantungan tas custom nama 3D yang bisa diklik. Identitas unik tas kamu!', images: ['/products/clickable_hero.png','/products/clickable_usage_collage.jpg'] },
 ]
 
