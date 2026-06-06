@@ -34,6 +34,9 @@ export default function AffiliatorPage() {
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({ full_name: '', whatsapp: '', city: '', tiktok_username: '', tiktok_followers: '', tiktok_url: '', instagram_url: '' })
   const [samples, setSamples] = useState<string[]>([])
+  const [tiktokshopSelected, setTiktokshopSelected] = useState(false)
+  const [tiktokshopBase64, setTiktokshopBase64] = useState('')
+  const [tiktokshopFileName, setTiktokshopFileName] = useState('')
   const [agreed, setAgreed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -55,6 +58,38 @@ export default function AffiliatorPage() {
     }
   }
 
+  function handleTiktokshopFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { setError('Maksimal ukuran file 5MB'); return }
+    setTiktokshopFileName(file.name)
+    const reader = new FileReader()
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1]
+      setTiktokshopBase64(base64)
+      setError('')
+      // auto-add to samples
+      if (!samples.includes('TikTok Shop (screenshot)')) {
+        if (samples.length >= 3) { setError('Maksimal 3 sampel'); return }
+        setSamples([...samples, 'TikTok Shop (screenshot)'])
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+
+  function toggleTiktokshop() {
+    if (tiktokshopSelected) {
+      setTiktokshopSelected(false)
+      setTiktokshopBase64('')
+      setTiktokshopFileName('')
+      setSamples(samples.filter(s => s !== 'TikTok Shop (screenshot)'))
+    } else {
+      if (samples.length >= 3) { setError('Maksimal 3 sampel'); return }
+      setTiktokshopSelected(true)
+      setError('')
+    }
+  }
+
   function validateStep() {
     if (step === 0) {
       if (!form.full_name || !form.whatsapp || !form.city) { setError('Semua field wajib diisi'); return false }
@@ -66,6 +101,7 @@ export default function AffiliatorPage() {
     }
     if (step === 2) {
       if (samples.length === 0) { setError('Pilih minimal 1 sampel'); return false }
+      if (tiktokshopSelected && !tiktokshopBase64) { setError('Upload screenshot produk TikTok Shop dulu'); return false }
       if (!agreed) { setError('Kamu harus menyetujui perjanjian'); return false }
     }
     return true
@@ -85,7 +121,7 @@ export default function AffiliatorPage() {
       const res = await fetch('/api/affiliator/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, samples })
+        body: JSON.stringify({ ...form, samples, tiktokshop_screenshot: tiktokshopBase64 || undefined, tiktokshop_filename: tiktokshopFileName || undefined })
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Gagal mendaftar')
@@ -150,11 +186,7 @@ export default function AffiliatorPage() {
                   <span style={{ fontSize: 24 }}>{p.emoji}</span>
                   <h3 style={{ color: '#fff', fontWeight: 700, fontSize: 16, margin: 0 }}>{p.name}</h3>
                 </div>
-                <p style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5, marginBottom: 12 }}>{p.desc}</p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ background: 'linear-gradient(90deg,#8B5CF6,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, fontSize: 18 }}>{p.price}</span>
-                  <span style={{ color: '#6b7280', fontSize: 11 }}>⭐ 4.9</span>
-                </div>
+                <p style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5, marginBottom: 0 }}>{p.desc}</p>
               </div>
             </div>
           ))}
