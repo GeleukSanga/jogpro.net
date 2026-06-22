@@ -1,453 +1,410 @@
-'use client'
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import Link from "next/link";
+import Image from "next/image";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 
-const PRODUCTS = [
-  { name: 'Oreo Cable Winder', price: 'Rp20.000', emoji: '🍪', desc: 'Bikin kabel charger kamu rapi & estetik ala biskuit Oreo.', images: ['/products/elwycvukkfjqd1iiy4di.jpg','/products/lkeennsiv4p8uz3aaapm.jpg'] },
-  { name: 'Compact Cable Winder', price: 'Rp20.000', emoji: '🔌', desc: 'Solusi praktis buat kabel headset/data yang sering kusut.', images: ['/products/compact_winder_hero.jpg'] },
-  { name: 'Phone Stand Keychain', price: 'Rp15.000', emoji: '📱', desc: 'Stand HP mini yang bisa digantung di kunci. Portabel & stylish!', images: ['/products/phone_stand_hero.jpg'] },
-  { name: 'Clickable Gantungan Tas Custom', price: 'Mulai Rp15.000', emoji: '🏷️', desc: 'Gantungan tas custom nama 3D yang bisa diklik. Identitas unik tas kamu!', images: ['/products/clickable_hero.png','/products/clickable_usage_collage.jpg'] },
-]
+export const metadata = {
+  title: "Jogpro Finance — Gadai HP & Pencairan Paylater Daerah Istimewa Yogyakarta",
+  description:
+    "Gadai HP proses 1 hari, bunga ringan 10%. Pencairan limit Shopee & TikTok Paylater. Aman, transparan, amanah. Melayani Daerah Istimewa Yogyakarta.",
+};
 
-const ProductSlider = ({ images }: { images: string[] }) => {
-  const [idx, setIdx] = useState(0)
+const WA_URL =
+  "https://wa.me/628972523968?text=Halo%20Jogpro%20Finance%2C%20saya%20ingin%20bertanya.";
+
+const S = {
+  section: {
+    padding: "80px 0",
+  } as React.CSSProperties,
+  container: {
+    maxWidth: "1100px",
+    margin: "0 auto",
+    padding: "0 24px",
+  } as React.CSSProperties,
+  card: {
+    border: "1px solid #e5e5e5",
+    borderRadius: "12px",
+    padding: "32px",
+    background: "#ffffff",
+  } as React.CSSProperties,
+  btnPrimary: {
+    display: "inline-block",
+    background: "#0a0a0a",
+    color: "#ffffff",
+    padding: "14px 28px",
+    borderRadius: "10px",
+    fontWeight: 600,
+    fontSize: "15px",
+    textDecoration: "none",
+    letterSpacing: "0.1px",
+  } as React.CSSProperties,
+  btnSecondary: {
+    display: "inline-block",
+    background: "transparent",
+    color: "#0a0a0a",
+    padding: "14px 28px",
+    borderRadius: "10px",
+    fontWeight: 600,
+    fontSize: "15px",
+    textDecoration: "none",
+    border: "1.5px solid #0a0a0a",
+    letterSpacing: "0.1px",
+  } as React.CSSProperties,
+};
+
+const faqs = [
+  {
+    q: "Berapa bunga gadai?",
+    a: "10% dari nominal pinjaman, minimum Rp100.000 untuk 2 minggu.",
+  },
+  {
+    q: "Berapa lama tenor gadai?",
+    a: "Maksimal 2 minggu + 3 hari masa tenggang. Jika lewat, barang menjadi hak Jogpro Finance/Jo untuk dimiliki, dijual, atau dilelang.",
+  },
+  {
+    q: "HP apa saja yang diterima?",
+    a: "Semua merek diterima. Kondisi dinilai saat cek fisik langsung.",
+  },
+  {
+    q: "Apakah aman?",
+    a: "Kami tidak menerima barang curian. Setiap transaksi dilindungi perjanjian digital.",
+  },
+];
+
+const whyUs = [
+  { icon: "⚡", title: "Proses Cepat 1 Hari", desc: "Dari pengajuan hingga dana cair, selesai dalam 1 hari kerja." },
+  { icon: "🤝", title: "Transparan & Amanah", desc: "Semua syarat dan bunga dijelaskan terbuka sebelum proses dimulai." },
+  { icon: "📊", title: "Bunga Jelas", desc: "10% dari nominal, minimum Rp100.000 untuk tenor 2 minggu. Tidak ada biaya lain." },
+  { icon: "🔒", title: "Tanpa Biaya Tersembunyi", desc: "Yang kami sampaikan di awal adalah yang Anda bayar. Tidak ada kejutan." },
+];
+
+const steps = [
+  { n: "01", title: "Hubungi via WA & Kirim Foto HP", desc: "Chat kami di WhatsApp, kirimkan foto kondisi HP yang ingin digadaikan." },
+  { n: "02", title: "Cek Fisik & Kesepakatan Nilai", desc: "Kami nilai kondisi HP dan sepakati nominal pinjaman bersama-sama." },
+  { n: "03", title: "Isi Form Perjanjian Online", desc: "Tanda tangani perjanjian digital yang melindungi kedua pihak." },
+  { n: "04", title: "Dana Cair ke Rekeningmu", desc: "Dana ditransfer langsung ke rekening Anda hari itu juga." },
+];
+
+export default function HomePage() {
   return (
-    <div style={{ position: 'relative', height: 240, overflow: 'hidden', borderRadius: 14, background: '#0a0a0a' }}>
-      <AnimatePresence mode='wait'>
-        <motion.img key={idx} src={images[idx]} initial={{ opacity: 0, scale: 1.05 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-      </AnimatePresence>
-      {images.length > 1 && (
-        <div style={{ position: 'absolute', bottom: 8, right: 8, display: 'flex', gap: 4 }}>
-          {images.map((_, i) => (
-            <button key={i} onClick={() => setIdx(i)} style={{ width: 10, height: 10, borderRadius: '50%', border: 'none', background: i === idx ? '#ec4899' : 'rgba(255,255,255,0.3)', cursor: 'pointer' }} />
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
+    <>
+      <Navbar />
+      <WhatsAppFloat />
 
-const STEPS = ['Data Diri', 'Sosial Media', 'Pilih Sampel']
-
-export default function AffiliatorPage() {
-  const [step, setStep] = useState(0)
-  const [form, setForm] = useState({ full_name: '', whatsapp: '', city: '', tiktok_username: '', tiktok_followers: '', tiktok_url: '', instagram_url: '' })
-  const [samples, setSamples] = useState<string[]>([])
-  const [tiktokshopSelected, setTiktokshopSelected] = useState(false)
-  const [tiktokshopBase64, setTiktokshopBase64] = useState('')
-  const [tiktokshopFileName, setTiktokshopFileName] = useState('')
-  const [agreed, setAgreed] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({ ...form, [e.target.name]: e.target.value })
-    setError('')
-  }
-
-  function toggleSample(name: string) {
-    if (samples.includes(name)) {
-      setSamples(samples.filter(s => s !== name))
-    } else {
-      if (samples.length >= 3) { setError('Maksimal 3 sampel'); return }
-      setSamples([...samples, name])
-      setError('')
-    }
-  }
-
-  function handleTiktokshopFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (file.size > 5 * 1024 * 1024) { setError('Maksimal ukuran file 5MB'); return }
-    setTiktokshopFileName(file.name)
-    const reader = new FileReader()
-    reader.onload = () => {
-      const base64 = (reader.result as string).split(',')[1]
-      setTiktokshopBase64(base64)
-      setError('')
-      // auto-add to samples
-      if (!samples.includes('TikTok Shop (screenshot)')) {
-        if (samples.length >= 3) { setError('Maksimal 3 sampel'); return }
-        setSamples([...samples, 'TikTok Shop (screenshot)'])
-      }
-    }
-    reader.readAsDataURL(file)
-  }
-
-  function toggleTiktokshop() {
-    if (tiktokshopSelected) {
-      setTiktokshopSelected(false)
-      setTiktokshopBase64('')
-      setTiktokshopFileName('')
-      setSamples(samples.filter(s => s !== 'TikTok Shop (screenshot)'))
-    } else {
-      if (samples.length >= 3) { setError('Maksimal 3 sampel'); return }
-      setTiktokshopSelected(true)
-      setError('')
-    }
-  }
-
-  function validateStep() {
-    if (step === 0) {
-      if (!form.full_name || !form.whatsapp || !form.city) { setError('Semua field wajib diisi'); return false }
-      if (!/^08\d{8,11}$/.test(form.whatsapp)) { setError('Format WA: 08xx (10-13 digit)'); return false }
-    }
-    if (step === 1) {
-      if (!form.tiktok_username || !form.tiktok_followers) { setError('Username dan jumlah followers wajib diisi'); return false }
-      if (parseInt(form.tiktok_followers) < 600) { setError('Minimal 600 followers TikTok untuk mendaftar'); return false }
-    }
-    if (step === 2) {
-      if (samples.length === 0) { setError('Pilih minimal 1 sampel'); return false }
-      if (tiktokshopSelected && !tiktokshopBase64) { setError('Upload screenshot produk TikTok Shop dulu'); return false }
-      if (!agreed) { setError('Kamu harus menyetujui perjanjian'); return false }
-    }
-    return true
-  }
-
-  function nextStep() {
-    if (!validateStep()) return
-    setStep(s => s + 1)
-    setError('')
-  }
-
-  async function handleSubmit() {
-    if (!validateStep()) return
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetch('/api/affiliator/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, samples, tiktokshop_screenshot: tiktokshopBase64 || undefined, tiktokshop_filename: tiktokshopFileName || undefined })
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Gagal mendaftar')
-      setSuccess(true)
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Terjadi kesalahan')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (success) return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a0a0a 0%, #1a0533 50%, #0a0a0a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-      <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ textAlign: 'center', maxWidth: 480 }}>
-        <div style={{ fontSize: 80, marginBottom: 24 }}>🎉</div>
-        <h1 style={{ fontSize: 32, fontWeight: 900, color: '#fff', marginBottom: 12 }}>Pendaftaran Berhasil!</h1>
-        <p style={{ color: '#c4b5fd', fontSize: 18, marginBottom: 24, lineHeight: 1.6 }}>Tim Jogpro akan menghubungi kamu via WhatsApp dalam <strong style={{ color: '#f0abfc' }}>24 jam</strong> untuk konfirmasi dan pengiriman sampel.</p>
-        <div style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.4)', borderRadius: 16, padding: '20px' }}>
-          <p style={{ color: '#e9d5ff', margin: 0, fontSize: 14 }}>💜 Terima kasih sudah bergabung sebagai Affiliator Jogpro! Siapkan konten terbaikmu ya!</p>
-        </div>
-      </motion.div>
-    </div>
-  )
-
-  return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a0a0a 0%, #1a0533 50%, #0a0a0a 100%)', padding: '2rem 1rem' }}>
-      {/* Hero */}
-      <motion.div initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 48px' }}>
-        <div style={{ display: 'inline-block', background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.5)', borderRadius: 999, padding: '6px 20px', marginBottom: 16 }}>
-          <span style={{ color: '#c4b5fd', fontSize: 14, fontWeight: 600 }}>✨ Program Affiliator Jogpro</span>
-        </div>
-        <h1 style={{ fontSize: 'clamp(32px,6vw,56px)', fontWeight: 900, color: '#fff', lineHeight: 1.1, marginBottom: 16 }}>
-          Konten Kamu = <span style={{ background: 'linear-gradient(90deg,#8B5CF6,#EC4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Cuan Terus! 🚀</span>
-        </h1>
-        <p style={{ color: '#a78bfa', fontSize: 18, lineHeight: 1.6, marginBottom: 32 }}>Dapat produk 3D printed gratis, posting di TikTok/IG, dapat komisi dari setiap 1.000 views. Gampang, fleksibel, menguntungkan!</p>
-
-        {/* Stats */}
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
-          {[['🎁', '3 Sampel', 'Gratis'], ['💰', 'Rp5.000', '/1.000 views'], ['⏰', 'Fleksibel', 'Kapan aja']].map(([emoji, val, label]) => (
-            <div key={label} style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '16px 24px', minWidth: 100 }}>
-              <div style={{ fontSize: 28 }}>{emoji}</div>
-              <div style={{ color: '#fff', fontWeight: 800, fontSize: 18 }}>{val}</div>
-              <div style={{ color: '#9ca3af', fontSize: 12 }}>{label}</div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Produk Showcase */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        style={{ maxWidth: 1000, margin: '0 auto 48px' }}>
-        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 28, textAlign: 'center', marginBottom: 8 }}>🛍️ Produk Jogpro</h2>
-        <p style={{ color: '#9ca3af', fontSize: 14, textAlign: 'center', marginBottom: 32 }}>3D Printed • Fungsional • Harga Terjangkau</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 20 }}>
-          {PRODUCTS.map((p) => (
-            <div key={p.name} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, overflow: 'hidden', transition: 'all 0.3s', cursor: 'default' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(139,92,246,0.4)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)' }}>
-              <ProductSlider images={p.images} />
-              <div style={{ padding: '16px 18px 20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontSize: 24 }}>{p.emoji}</span>
-                  <h3 style={{ color: '#fff', fontWeight: 700, fontSize: 16, margin: 0 }}>{p.name}</h3>
-                </div>
-                <p style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5, marginBottom: 0 }}>{p.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div style={{ textAlign: 'center', marginTop: 28 }}>
-          <a href="https://vt.tiktok.com/ZSQNj7fS8/?page=Mall" target="_blank" rel="noopener noreferrer"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#8B5CF6,#EC4899)', color: '#fff', fontWeight: 700, fontSize: 15, padding: '12px 28px', borderRadius: 40, textDecoration: 'none', transition: 'all 0.3s', boxShadow: '0 4px 20px rgba(139,92,246,0.3)' }}>
-            🛒 Cek Produk Selengkapnya di TikTok Shop
-          </a>
-        </div>
-      </motion.div>
-
-      {/* Cara Kerja & Komisi */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-        style={{ maxWidth: 800, margin: '0 auto 48px' }}>
-
-        {/* How It Works */}
-        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 24, textAlign: 'center', marginBottom: 24 }}>🔄 Cara Kerja</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 36 }}>
-          {[
-            ['1️⃣', 'Daftar', 'Isi form + pilih 3 sampel gratis'],
-            ['2️⃣', 'Terima Sampel', 'Kami kirim produk fisik dalam 2-3 hari'],
-            ['3️⃣', 'Bikin Konten', 'Review produk, upload ke TikTok/IG/FB/Threads'],
-            ['4️⃣', 'Laporkan', 'Laporkan views konten lewat dashboard'],
-            ['5️⃣', 'Dapat Cuan!', 'Komisi views + komisi affiliate'],
-          ].map(([num, title, desc]) => (
-            <div key={title} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '20px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: 28, marginBottom: 8 }}>{num}</div>
-              <div style={{ color: '#fff', fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{title}</div>
-              <div style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5 }}>{desc}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Platform */}
-        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 24, textAlign: 'center', marginBottom: 24 }}>📱 Platform yang Bisa Digunakan</h2>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 36 }}>
-          {[
-            ['🎵', 'TikTok', '#ff0050'],
-            ['📸', 'Instagram', '#E1306C'],
-            ['📘', 'Facebook', '#1877F2'],
-            ['🧵', 'Threads', '#000'],
-          ].map(([emoji, name, color]) => (
-            <div key={name} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 22 }}>{emoji}</span>
-              <span style={{ color: '#fff', fontWeight: 700, fontSize: 15 }}>{name}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Requirements */}
-        <div style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 16, padding: '20px 24px', marginBottom: 24 }}>
-          <h3 style={{ color: '#f0abfc', fontWeight: 700, fontSize: 18, marginBottom: 12 }}>⚠️ Syarat Wajib</h3>
-          <ul style={{ color: '#c4b5fd', fontSize: 14, lineHeight: 2, margin: 0, paddingLeft: 20 }}>
-            <li>Punya akun <strong style={{ color: '#fff' }}>TikTok yang eligible TikTok Affiliate</strong> (min. 600 followers)</li>
-            <li>Punya akun <strong style={{ color: '#fff' }}>Shopee Affiliate yang aktif</strong></li>
-            <li>Bersedia posting minimal 1 konten dalam 7 hari setelah menerima sampel</li>
-          </ul>
-        </div>
-
-        {/* Commission */}
-        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 24, textAlign: 'center', marginBottom: 24 }}>💰 Sistem Komisi</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
-          <div style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(236,72,153,0.2))', border: '1px solid rgba(139,92,246,0.4)', borderRadius: 16, padding: '24px', textAlign: 'center' }}>
-            <div style={{ fontSize: 36, marginBottom: 8 }}>👀</div>
-            <div style={{ color: '#fff', fontWeight: 800, fontSize: 28, marginBottom: 4 }}>Rp5.000</div>
-            <div style={{ color: '#c4b5fd', fontSize: 16, fontWeight: 600, marginBottom: 8 }}>per 1.000 views</div>
-            <div style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5 }}>Posting konten produk di akunmu, setiap 1.000 views = Rp5.000 langsung dari Jogpro</div>
-          </div>
-          <div style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(59,130,246,0.15))', border: '1px solid rgba(34,197,94,0.4)', borderRadius: 16, padding: '24px', textAlign: 'center' }}>
-            <div style={{ fontSize: 36, marginBottom: 8 }}>🛒</div>
-            <div style={{ color: '#fff', fontWeight: 800, fontSize: 28, marginBottom: 4 }}>Hingga 20%</div>
-            <div style={{ color: '#86efac', fontSize: 16, fontWeight: 600, marginBottom: 8 }}>komisi affiliate</div>
-            <div style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.5 }}>Gunakan affiliate link TikTok Shop & Shopee di kontenmu. Komisi hingga 20% per penjualan!</div>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#f0abfc', fontSize: 16, fontWeight: 700, marginBottom: 4 }}>🔥 Double Cuan!</p>
-          <p style={{ color: '#c4b5fd', fontSize: 14, margin: 0 }}>Dapat komisi views dari Jogpro <strong style={{ color: '#fff' }}>+</strong> komisi affiliate dari TikTok Shop & Shopee sekaligus!</p>
-        </div>
-      </motion.div>
-
-      {/* Form */}
-      <div style={{ maxWidth: 560, margin: '0 auto' }}>
-        {/* Progress */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 32, alignItems: 'center' }}>
-          {STEPS.map((s, i) => (
-            <div key={s} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14, background: i <= step ? 'linear-gradient(135deg,#8B5CF6,#EC4899)' : 'rgba(255,255,255,0.1)', color: i <= step ? '#fff' : '#6b7280', transition: 'all 0.3s' }}>{i + 1}</div>
-              <span style={{ color: i <= step ? '#c4b5fd' : '#6b7280', fontSize: 12, fontWeight: 600 }}>{s}</span>
-              {i < STEPS.length - 1 && <div style={{ position: 'absolute', width: 0 }} />}
-            </div>
-          ))}
-        </div>
-
-        {/* Card */}
-        <motion.div key={step} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-          style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, padding: '32px', marginBottom: 16 }}>
-
-          {step === 0 && (
-            <div>
-              <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 22, marginBottom: 24 }}>👤 Data Diri</h2>
-              {[['full_name', 'Nama Lengkap', 'Nama kamu...', 'text'], ['whatsapp', 'Nomor WhatsApp', '08xxxxxxxxxx', 'tel'], ['city', 'Kota/Kabupaten', 'Jakarta, Bandung, dll...', 'text']].map(([name, label, placeholder, type]) => (
-                <div key={name} style={{ marginBottom: 20 }}>
-                  <label style={{ color: '#c4b5fd', fontSize: 14, fontWeight: 600, display: 'block', marginBottom: 8 }}>{label}</label>
-                  <input name={name} type={type} placeholder={placeholder} value={form[name as keyof typeof form]} onChange={handleChange}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, padding: '12px 16px', color: '#fff', fontSize: 16, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
+      {/* ── HERO ── */}
+      <section style={{ ...S.section, paddingTop: "120px", background: "#ffffff" }}>
+        <div style={S.container}>
+          <div style={{ maxWidth: "720px" }}>
+            {/* Badges */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "28px" }}>
+              {["✓ Proses 1 Hari", "✓ Amanah", "✓ Transparan"].map((b) => (
+                <span
+                  key={b}
+                  style={{
+                    background: "#f5f5f5",
+                    color: "#0a0a0a",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    padding: "6px 14px",
+                    borderRadius: "99px",
+                    border: "1px solid #e5e5e5",
+                  }}
+                >
+                  {b}
+                </span>
               ))}
             </div>
-          )}
 
-          {step === 1 && (
-            <div>
-              <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 22, marginBottom: 24 }}>📱 Akun Sosial Media</h2>
-              {[['tiktok_username', 'Username TikTok', '@username_kamu', 'text'], ['tiktok_followers', 'Jumlah Followers TikTok', 'Contoh: 1200 (min 600)', 'number'], ['tiktok_url', 'Link Profil TikTok', 'https://tiktok.com/@username', 'url'], ['instagram_url', 'Link Instagram (opsional)', 'https://instagram.com/username', 'url']].map(([name, label, placeholder, type]) => (
-                <div key={name} style={{ marginBottom: 20 }}>
-                  <label style={{ color: '#c4b5fd', fontSize: 14, fontWeight: 600, display: 'block', marginBottom: 8 }}>{label} {name === 'instagram_url' ? <span style={{ color: '#6b7280', fontSize: 12 }}>(opsional)</span> : ''}</label>
-                  <input name={name} type={type} placeholder={placeholder} value={form[name as keyof typeof form]} onChange={handleChange}
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, padding: '12px 16px', color: '#fff', fontSize: 16, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              ))}
-              <div style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 12, padding: '12px 16px' }}>
-                <p style={{ color: '#c4b5fd', fontSize: 13, margin: 0 }}>ℹ️ Minimal 600 followers TikTok untuk bisa generate affiliate link TikTok</p>
-              </div>
+            <h1
+              style={{
+                fontSize: "clamp(36px, 6vw, 56px)",
+                fontWeight: 800,
+                lineHeight: 1.15,
+                letterSpacing: "-1.5px",
+                color: "#0a0a0a",
+                marginBottom: "20px",
+              }}
+            >
+              Gadai HP & Paylater,{" "}
+              <span style={{ color: "#6b7280" }}>Cair Hari Ini</span>
+            </h1>
+
+            <p
+              style={{
+                fontSize: "18px",
+                color: "#6b7280",
+                lineHeight: 1.7,
+                marginBottom: "36px",
+                maxWidth: "560px",
+              }}
+            >
+              Layanan gadai handphone terpercaya dan pencairan Shopee/TikTok Paylater. Proses 1 hari, aman, transparan. Melayani Daerah Istimewa Yogyakarta.
+            </p>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+              <Link href="/gadai" style={S.btnPrimary}>Ajukan Gadai →</Link>
+              <Link href="/paylater" style={S.btnSecondary}>Info Paylater</Link>
             </div>
-          )}
-
-          {step === 2 && (
-            <div>
-              <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 22, marginBottom: 8 }}>🎁 Pilih Sampel Gratis</h2>
-              <p style={{ color: '#9ca3af', fontSize: 14, marginBottom: 24 }}>Pilih maksimal 3 produk yang ingin kamu review</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-                {PRODUCTS.map(p => {
-                  const selected = samples.includes(p.name)
-                  return (
-                    <div key={p.name} onClick={() => toggleSample(p.name)} style={{ background: selected ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.05)', border: `2px solid ${selected ? '#8B5CF6' : 'rgba(255,255,255,0.1)'}`, borderRadius: 16, padding: '16px 12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center' }}>
-                      <div style={{ fontSize: 32, marginBottom: 8 }}>{p.emoji}</div>
-                      <div style={{ color: '#fff', fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{p.name}</div>
-                      <div style={{ color: '#a78bfa', fontSize: 12 }}>{p.price}</div>
-                      {selected && <div style={{ marginTop: 8, color: '#8B5CF6', fontSize: 20 }}>✓</div>}
-                    </div>
-                  )
-                })}
-              </div>
-
-              {/* TikTok Shop Option */}
-              <div onClick={toggleTiktokshop} style={{ background: tiktokshopSelected ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.05)', border: `2px solid ${tiktokshopSelected ? '#8B5CF6' : 'rgba(255,255,255,0.1)'}`, borderRadius: 16, padding: '16px 12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center', marginBottom: 12 }}>
-                <div style={{ fontSize: 32, marginBottom: 8 }}>🛒</div>
-                <div style={{ color: '#fff', fontWeight: 700, fontSize: 13, marginBottom: 4 }}>Produk TikTok Shop</div>
-                <div style={{ color: '#a78bfa', fontSize: 12 }}>Upload screenshot</div>
-                {tiktokshopSelected && <div style={{ marginTop: 8, color: '#8B5CF6', fontSize: 20 }}>✓</div>}
-              </div>
-              {tiktokshopSelected && (
-                <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 12, padding: '14px 16px', marginBottom: 16 }}>
-                  <p style={{ color: '#c4b5fd', fontSize: 13, marginBottom: 10 }}>📸 Upload screenshot produk yang kamu mau dari TikTok Shop:</p>
-                  <input type="file" accept="image/*" onChange={handleTiktokshopFile}
-                    style={{ width: '100%', color: '#9ca3af', fontSize: 13, marginBottom: 8 }} />
-                  {tiktokshopFileName && <p style={{ color: '#86efac', fontSize: 12, margin: 0 }}>✅ {tiktokshopFileName}</p>}
-                </div>
-              )}
-
-              <div style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '16px', marginBottom: 16 }}>
-                <label style={{ display: 'flex', gap: 12, alignItems: 'flex-start', cursor: 'pointer' }}>
-                  <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} style={{ marginTop: 2, width: 18, height: 18, accentColor: '#8B5CF6' }} />
-                  <span style={{ color: '#c4b5fd', fontSize: 14, lineHeight: 1.5 }}>Saya setuju akan posting minimal 1 video dalam <strong>7 hari</strong> setelah menerima sampel dan melaporkan views sesuai ketentuan program affiliator Jogpro.</span>
-                </label>
-              </div>
-            </div>
-          )}
-
-          {error && <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', borderRadius: 10, padding: '10px 14px', color: '#fca5a5', fontSize: 14, marginBottom: 16 }}>{error}</div>}
-
-          <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-            {step > 0 && <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, padding: '14px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer' }}>← Kembali</button>}
-            {step < 2
-              ? <button onClick={nextStep} style={{ flex: 2, padding: '14px', background: 'linear-gradient(135deg,#8B5CF6,#EC4899)', border: 'none', borderRadius: 12, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}>Lanjut →</button>
-              : <button onClick={handleSubmit} disabled={loading} style={{ flex: 2, padding: '14px', background: loading ? 'rgba(139,92,246,0.4)' : 'linear-gradient(135deg,#8B5CF6,#EC4899)', border: 'none', borderRadius: 12, color: '#fff', fontSize: 16, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}>{loading ? '⏳ Mengirim...' : '🚀 Daftar Sekarang!'}</button>
-            }
           </div>
-        </motion.div>
-      </div>
-
-      {/* FAQ Accordion */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-        style={{ maxWidth: 700, margin: '0 auto', paddingTop: 48 }}>
-        <div style={{ textAlign: 'center', marginBottom: 8 }}>
-          <span style={{ display: 'inline-block', background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(139,92,246,0.5)', borderRadius: 999, padding: '4px 16px', color: '#c4b5fd', fontSize: 13, fontWeight: 600, marginBottom: 16 }}>❓ FAQ</span>
         </div>
-        <h2 style={{ color: '#fff', fontWeight: 800, fontSize: 28, textAlign: 'center', marginBottom: 36 }}>Pertanyaan Umum</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {[
-            ['💸', 'Kapan payout / pencairan komisi?', 'Setiap akhir pekan (Sabtu/Minggu). Saldo akan otomatis ditransfer ke rekening/ewallet kamu.'],
-            ['📊', 'Berapa minimal saldo untuk payout?', 'Minimal saldo Rp10.000. Kalau di bawah itu, saldo akan diakumulasi ke minggu berikutnya.'],
-            ['🎁', 'Apakah sampel benar-benar gratis?', 'Iya! 3 sampel produk 100% gratis termasuk ongkir. Kamu tidak perlu bayar apa pun.'],
-            ['📹', 'Harus posting di platform apa?', 'Bebas! TikTok, Instagram, Facebook, Threads — yang penting kontennya tentang produk Jogpro.'],
-            ['⏱️', 'Ada batas waktu posting konten?', 'Ya, minimal 1 konten dalam 7 hari setelah sampel diterima. Semakin sering posting, semakin banyak cuan!'],
-            ['🛒', 'Bagaimana cara dapat komisi affiliate?', 'Gunakan affiliate link TikTok Shop & Shopee yang kami sediakan di dashboard. Setiap penjualan lewat link kamu = komisi hingga 20%.'],
-            ['👥', 'Apakah follower TikTok wajib 600?', 'Ya, karena untuk generate affiliate link TikTok Shop butuh minimal 600 followers. Tapi kamu tetap bisa posting di IG/FB/Threads ya.'],
-            ['📦', 'Berapa lama pengiriman sampel?', '2-3 hari kerja via JNT/Lion Parcel. Gratis ongkir untuk seluruh Pulau Jawa.'],
-          ].map(([emoji, q, a], i) => {
-            const isOpen = openFaq === i
-            return (
-              <div key={q}
-                onClick={() => setOpenFaq(isOpen ? null : i)}
-                style={{ 
-                  background: isOpen ? 'rgba(139,92,246,0.12)' : 'rgba(255,255,255,0.04)', 
-                  border: `1px solid ${isOpen ? 'rgba(139,92,246,0.4)' : 'rgba(255,255,255,0.08)'}`, 
-                  borderRadius: 16, 
-                  padding: '18px 24px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  backdropFilter: 'blur(12px)',
+      </section>
+
+      {/* ── LAYANAN ── */}
+      <section style={{ ...S.section, background: "#f5f5f5" }}>
+        <div style={S.container}>
+          <h2
+            style={{
+              fontSize: "clamp(24px, 4vw, 36px)",
+              fontWeight: 700,
+              letterSpacing: "-0.5px",
+              marginBottom: "8px",
+            }}
+          >
+            Layanan Kami
+          </h2>
+          <p style={{ color: "#6b7280", marginBottom: "40px", fontSize: "16px" }}>
+            Dua layanan utama untuk kebutuhan finansial Anda.
+          </p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "24px",
+            }}
+          >
+            {/* Card Gadai */}
+            <div style={S.card}>
+              <div style={{ fontSize: "40px", marginBottom: "16px" }}>📱</div>
+              <h3 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "12px" }}>Gadai HP</h3>
+              <p style={{ color: "#6b7280", fontSize: "15px", lineHeight: 1.7, marginBottom: "20px" }}>
+                Gadaikan handphone Anda dengan proses mudah via WhatsApp. Cek fisik, sepakat nilai, dana cair hari itu.
+              </p>
+              <div
+                style={{
+                  background: "#f5f5f5",
+                  borderRadius: "8px",
+                  padding: "12px 16px",
+                  marginBottom: "24px",
+                  display: "inline-block",
                 }}
-                onMouseEnter={e => { if (!isOpen) { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)' }}}
-                onMouseLeave={e => { if (!isOpen) { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <span style={{ fontSize: 24, flexShrink: 0 }}>{emoji}</span>
-                  <h4 style={{ color: isOpen ? '#f0abfc' : '#fff', fontWeight: 700, fontSize: 15, margin: 0, flex: 1, transition: 'color 0.3s' }}>{q}</h4>
-                  <motion.span
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    style={{ color: isOpen ? '#a78bfa' : '#6b7280', fontSize: 18, flexShrink: 0, lineHeight: 1 }}
-                  >
-                    ▼
-                  </motion.span>
-                </div>
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                      animate={{ height: 'auto', opacity: 1, marginTop: 14 }}
-                      exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                      style={{ overflow: 'hidden' }}
-                    >
-                      <div style={{ 
-                        borderTop: '1px solid rgba(139,92,246,0.2)', 
-                        paddingTop: 14,
-                      }}>
-                        <p style={{ color: '#c4b5fd', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{a}</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <span style={{ fontWeight: 700, color: "#0a0a0a", fontSize: "15px" }}>Bunga 10%</span>
+                <span style={{ color: "#6b7280", fontSize: "13px" }}> / 2 minggu · min Rp100.000</span>
               </div>
-            )
-          })}
-        </div>
+              <br />
+              <Link href="/gadai" style={S.btnPrimary}>Pelajari & Ajukan →</Link>
+            </div>
 
-        {/* Final CTA */}
-        <div style={{ textAlign: 'center', marginTop: 40, paddingBottom: 48 }}>
-          <p style={{ color: '#c4b5fd', fontSize: 16, marginBottom: 8 }}>Masih ada pertanyaan?</p>
-          <a href="https://wa.me/628972523968" target="_blank" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg,#25D366,#128C7E)', borderRadius: 12, padding: '14px 28px', color: '#fff', fontWeight: 700, fontSize: 16, textDecoration: 'none' }}>
-            💬 Chat via WhatsApp
-          </a>
+            {/* Card Paylater */}
+            <div style={S.card}>
+              <div style={{ fontSize: "40px", marginBottom: "16px" }}>💳</div>
+              <h3 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "12px" }}>Pencairan Paylater</h3>
+              <p style={{ color: "#6b7280", fontSize: "15px", lineHeight: 1.7, marginBottom: "20px" }}>
+                Punya limit Shopee PayLater atau TikTok Paylater tapi butuh uang tunai? Kami bantu cairkan dengan aman.
+              </p>
+              <div
+                style={{
+                  background: "#f5f5f5",
+                  borderRadius: "8px",
+                  padding: "12px 16px",
+                  marginBottom: "24px",
+                  display: "flex",
+                  gap: "16px",
+                  alignItems: "center",
+                }}
+              >
+                <Image src="/logo-shopee.jpg" alt="Shopee PayLater" width={36} height={36} style={{ objectFit: "contain", borderRadius: 6 }} />
+                <span style={{ fontSize: "13px", color: "#6b7280" }}>Shopee PayLater</span>
+                <Image src="/logo-tiktok.jpg" alt="TikTok Paylater" width={36} height={36} style={{ objectFit: "contain", borderRadius: 6 }} />
+                <span style={{ fontSize: "13px", color: "#6b7280" }}>TikTok Paylater</span>
+              </div>
+              <a href={WA_URL} target="_blank" rel="noopener noreferrer" style={S.btnPrimary}>
+                Hubungi via WA →
+              </a>
+            </div>
+          </div>
         </div>
-      </motion.div>
-    </div>
-  )
+      </section>
+
+      {/* ── CARA KERJA ── */}
+      <section style={S.section}>
+        <div style={S.container}>
+          <h2
+            style={{
+              fontSize: "clamp(24px, 4vw, 36px)",
+              fontWeight: 700,
+              letterSpacing: "-0.5px",
+              marginBottom: "8px",
+            }}
+          >
+            Cara Kerja Gadai
+          </h2>
+          <p style={{ color: "#6b7280", marginBottom: "48px", fontSize: "16px" }}>
+            Empat langkah mudah dari WhatsApp hingga dana cair.
+          </p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "24px",
+            }}
+          >
+            {steps.map((s) => (
+              <div key={s.n} style={{ ...S.card, position: "relative" }}>
+                <div
+                  style={{
+                    fontSize: "48px",
+                    fontWeight: 800,
+                    color: "#e5e5e5",
+                    lineHeight: 1,
+                    marginBottom: "16px",
+                  }}
+                >
+                  {s.n}
+                </div>
+                <h4 style={{ fontWeight: 700, fontSize: "16px", marginBottom: "10px", lineHeight: 1.4 }}>
+                  {s.title}
+                </h4>
+                <p style={{ fontSize: "14px", color: "#6b7280", lineHeight: 1.7 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── KENAPA PILIH KAMI ── */}
+      <section style={{ ...S.section, background: "#0a0a0a" }}>
+        <div style={S.container}>
+          <h2
+            style={{
+              fontSize: "clamp(24px, 4vw, 36px)",
+              fontWeight: 700,
+              letterSpacing: "-0.5px",
+              marginBottom: "8px",
+              color: "#ffffff",
+            }}
+          >
+            Kenapa Pilih Kami?
+          </h2>
+          <p style={{ color: "#9ca3af", marginBottom: "48px", fontSize: "16px" }}>
+            Kami dibangun di atas kepercayaan dan transparansi.
+          </p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "24px",
+            }}
+          >
+            {whyUs.map((w) => (
+              <div
+                key={w.title}
+                style={{
+                  border: "1px solid #1f2937",
+                  borderRadius: "12px",
+                  padding: "32px",
+                  background: "#111111",
+                }}
+              >
+                <div style={{ fontSize: "32px", marginBottom: "14px" }}>{w.icon}</div>
+                <h4 style={{ fontWeight: 700, fontSize: "16px", marginBottom: "10px", color: "#ffffff" }}>
+                  {w.title}
+                </h4>
+                <p style={{ fontSize: "14px", color: "#9ca3af", lineHeight: 1.7 }}>{w.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section style={S.section}>
+        <div style={S.container}>
+          <h2
+            style={{
+              fontSize: "clamp(24px, 4vw, 36px)",
+              fontWeight: 700,
+              letterSpacing: "-0.5px",
+              marginBottom: "8px",
+            }}
+          >
+            Pertanyaan Umum
+          </h2>
+          <p style={{ color: "#6b7280", marginBottom: "40px", fontSize: "16px" }}>
+            Jawaban untuk pertanyaan yang sering ditanyakan.
+          </p>
+
+          <div style={{ maxWidth: "720px" }}>
+            {faqs.map((faq, i) => (
+              <div
+                key={faq.q}
+                style={{
+                  padding: "24px 0",
+                  borderBottom: i < faqs.length - 1 ? "1px solid #e5e5e5" : "none",
+                }}
+              >
+                <h4 style={{ fontWeight: 700, fontSize: "16px", marginBottom: "8px", color: "#0a0a0a" }}>
+                  {faq.q}
+                </h4>
+                <p style={{ fontSize: "15px", color: "#6b7280", lineHeight: 1.7 }}>{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA BOTTOM ── */}
+      <section style={{ ...S.section, background: "#f5f5f5" }}>
+        <div style={S.container}>
+          <div
+            style={{
+              background: "#0a0a0a",
+              borderRadius: "16px",
+              padding: "64px 48px",
+              textAlign: "center",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "clamp(24px, 4vw, 40px)",
+                fontWeight: 800,
+                color: "#ffffff",
+                letterSpacing: "-0.8px",
+                marginBottom: "16px",
+              }}
+            >
+              Siap Mengajukan?
+            </h2>
+            <p style={{ color: "#9ca3af", fontSize: "17px", marginBottom: "32px" }}>
+              Hubungi kami sekarang via WhatsApp. Respon cepat, proses cepat.
+            </p>
+            <a
+              href={WA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                background: "#25d366",
+                color: "#ffffff",
+                padding: "16px 36px",
+                borderRadius: "10px",
+                fontWeight: 700,
+                fontSize: "16px",
+                textDecoration: "none",
+                letterSpacing: "0.1px",
+              }}
+            >
+              💬 Chat WhatsApp Sekarang
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </>
+  );
 }

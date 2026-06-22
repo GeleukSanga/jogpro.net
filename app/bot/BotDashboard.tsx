@@ -9,6 +9,7 @@ interface Trade {
   symbol: string; direction: string; entry: number; tp: number; sl: number;
   risk: number; score: number; reason: string; open_ts: string;
   current_price?: number; unrealized_pnl?: number;
+  last_review?: string; last_review_ts?: string;
 }
 interface ClosedTrade extends Trade {
   exit: number; outcome: string; pnl: number; close_ts: string;
@@ -56,7 +57,7 @@ interface CoinBias {
 
 const fmt    = (n: number, d = 2) => Number(n ?? 0).toFixed(d);
 const fmtPx  = (n: number) => n >= 1 ? fmt(n, 4) : fmt(n, 6);
-const fmtPnl = (n: number) => `${n >= 0 ? "+" : ""}$${fmt(Math.abs(n))}`;
+const fmtPnl = (n: number) => `${n >= 0 ? "+" : "-"}$${fmt(Math.abs(n))}`;
 
 function DirBadge({ d }: { d: string }) {
   return d === "LONG"
@@ -219,11 +220,9 @@ export default function BotDashboard() {
 
   return (
     <>
-      {/* Chart.js CDN */}
       <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" async />
 
       <div className="dash-root">
-        {/* ── Header ── */}
         <header className="dash-header">
           <div style={{ display:"flex", alignItems:"center", gap:12 }}>
             <div className="live-dot" />
@@ -233,8 +232,6 @@ export default function BotDashboard() {
         </header>
 
         <main className="dash-main">
-
-          {/* ── Stat Cards ── */}
           <div className="stats-grid">
             {[
               { label:"Balance",       value:`$${fmt(state.balance)}`,                          cls: "blue" },
@@ -254,7 +251,6 @@ export default function BotDashboard() {
             ))}
           </div>
 
-          {/* ── Charts ── */}
           <div className="charts-row">
             <div className="chart-card">
               <h3>📈 Equity Curve</h3>
@@ -266,7 +262,6 @@ export default function BotDashboard() {
             </div>
           </div>
 
-          {/* ── Open Trades ── */}
           <div className="section-header">Open Trades <span className="badge">{openList.length}</span></div>
           <div className="table-card">
             <div className="table-x-scroll">
@@ -274,7 +269,7 @@ export default function BotDashboard() {
                 <thead><tr>
                   <th>Symbol</th><th>Dir</th><th>Entry</th><th>Now</th><th>uPnL</th>
                   <th>TP</th><th>SL</th><th>Risk</th><th>Score</th><th>RR</th>
-                  <th>Konfirmasi</th><th>Buka</th>
+                  <th>Konfirmasi (Last Review)</th><th>Buka</th>
                 </tr></thead>
                 <tbody>
                   {openList.length === 0
@@ -293,7 +288,11 @@ export default function BotDashboard() {
                           <td>${fmt(t.risk)}</td>
                           <td>{fmt(t.score)}</td>
                           <td>{rr(t.entry, t.tp, t.sl)}</td>
-                          <td style={{ fontSize:"0.72rem", maxWidth:220, lineHeight:1.5 }}>{t.reason}</td>
+                          <td style={{ fontSize:"0.7rem", maxWidth:300, lineHeight:1.4 }}>
+                             {t.last_review && <div style={{ marginBottom:4, color:"#fff" }}>{t.last_review}</div>}
+                             <div style={{ color:"var(--muted)" }}>{t.reason}</div>
+                             {t.last_review_ts && <div style={{ color:"var(--blue)", marginTop:4 }}>{t.last_review_ts}</div>}
+                          </td>
                           <td style={{ color:"var(--muted)", fontSize:"0.72rem" }}>{t.open_ts}</td>
                         </tr>
                       );
@@ -304,42 +303,41 @@ export default function BotDashboard() {
             </div>
           </div>
 
-          {/* ── Closed Trades ── */}
           <div className="section-header">Closed Trades <span className="badge">{closedList.length}</span></div>
           <div className="table-card">
             <div className="table-scroll">
               <div className="table-x-scroll">
                 <table>
-                  <thead><tr>
-                    <th>Symbol</th><th>Dir</th><th>Outcome</th><th>Entry</th><th>Exit</th>
-                    <th>PnL</th><th>Risk</th><th>RR</th><th>Score</th><th>Buka</th><th>Tutup</th>
-                  </tr></thead>
-                  <tbody>
-                    {closedList.length === 0
-                      ? <tr className="empty-row"><td colSpan={11}>Belum ada trade tertutup</td></tr>
-                      : closedList.map((t, i) => (
-                        <tr key={i}>
-                          <td><b>{t.symbol}</b></td>
-                          <td><DirBadge d={t.direction} /></td>
-                          <td><span className={t.outcome === "TP" ? "out-tp" : "out-sl"}>{t.outcome}</span></td>
-                          <td>{fmtPx(t.entry)}</td>
-                          <td>{fmtPx(t.exit)}</td>
-                          <td className={t.pnl >= 0 ? "green" : "red"}>{fmtPnl(t.pnl)}</td>
-                          <td>${fmt(t.risk)}</td>
-                          <td>{rr(t.entry, t.tp, t.sl)}</td>
-                          <td>{fmt(t.score)}</td>
-                          <td style={{ color:"var(--muted)", fontSize:"0.72rem" }}>{t.open_ts}</td>
-                          <td style={{ color:"var(--muted)", fontSize:"0.72rem" }}>{t.close_ts}</td>
-                        </tr>
-                      ))
-                    }
-                  </tbody>
-                </table>
+                      <thead><tr>
+                  <th>Symbol</th><th>Dir</th><th>Outcome</th><th>Entry</th><th>Exit</th>
+                  <th>PnL</th><th>Risk</th><th>RR</th><th>Score</th><th>Alasan</th><th>Buka</th><th>Tutup</th>
+                </tr></thead>
+                <tbody>
+                  {closedList.length === 0
+                    ? <tr className="empty-row"><td colSpan={12}>Belum ada trade tertutup</td></tr>
+                    : closedList.map((t, i) => (
+                      <tr key={i}>
+                        <td><b>{t.symbol}</b></td>
+                        <td><DirBadge d={t.direction} /></td>
+                        <td><span className={t.outcome === "TP" ? "out-tp" : t.outcome === "SL" ? "out-sl" : "out-early"}>{t.outcome}</span></td>
+                        <td>{fmtPx(t.entry)}</td>
+                        <td>{fmtPx(t.exit)}</td>
+                        <td className={t.pnl >= 0 ? "green" : "red"}>{fmtPnl(t.pnl)}</td>
+                        <td>${fmt(t.risk)}</td>
+                        <td>{rr(t.entry, t.tp, t.sl)}</td>
+                        <td>{fmt(t.score)}</td>
+                        <td style={{ fontSize:"0.7rem", maxWidth:250, lineHeight:1.4 }}>{t.reason}</td>
+                        <td style={{ color:"var(--muted)", fontSize:"0.72rem" }}>{t.open_ts}</td>
+                        <td style={{ color:"var(--muted)", fontSize:"0.72rem" }}>{t.close_ts}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+</table>
               </div>
             </div>
           </div>
 
-          {/* ── Scan Results ── */}
           <div className="section-header">Scan Results <span className="badge">{scanList.length}</span></div>
           {scanList.length === 0
             ? <div style={{ color:"var(--muted)", padding:16 }}>Belum ada data scan</div>
@@ -391,7 +389,6 @@ export default function BotDashboard() {
               </div>
           }
 
-          {/* ── Coin Bias Ranking ── */}
           <div className="section-header">
             🎯 Coin Bias Ranking <span className="badge">{coinBiasList.length}</span>
             <span style={{ color:"var(--muted)", fontSize:"0.72rem", textTransform:"none", letterSpacing:0 }}>update tiap 4 jam</span>
@@ -499,16 +496,6 @@ export default function BotDashboard() {
         .dir-short { background:rgba(255,82,82,.15); color:var(--red); border:1px solid rgba(255,82,82,.3); }
         .out-tp { color:var(--green); font-weight:700; }
         .out-sl { color:var(--red); font-weight:700; }
-
-        .scan-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:8px; margin-bottom:16px; }
-        .scan-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; }
-        .scan-card.signal { border-color:rgba(0,230,118,.4); background:rgba(0,230,118,.04); }
-        .scan-card.signal-short { border-color:rgba(255,82,82,.4); background:rgba(255,82,82,.04); }
-        .scan-card .sym { font-weight:700; font-size:.88rem; }
-        .scan-card .price { color:var(--muted); font-size:.78rem; }
-        .scan-card .tags { margin-top:5px; }
-
-        @media(max-width:700px) { .charts-row { grid-template-columns:1fr; } }
       `}</style>
     </>
   );
