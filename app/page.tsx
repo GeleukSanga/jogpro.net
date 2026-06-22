@@ -83,7 +83,8 @@ const steps = [
   { n: "01", title: "Hubungi via WA & Kirim Foto HP", desc: "Chat kami di WhatsApp, kirimkan foto kondisi HP yang ingin digadaikan." },
   { n: "02", title: "Cek Fisik & Kesepakatan Nilai", desc: "Kami nilai kondisi HP dan sepakati nominal pinjaman bersama-sama." },
   { n: "03", title: "Isi Form Perjanjian Online", desc: "Tanda tangani perjanjian digital yang melindungi kedua pihak." },
-  { n: "04", title: "Dana Cair ke Rekeningmu", desc: "Dana ditransfer langsung ke rekening Anda hari itu juga." },
+  { n: "04", title: "COD Serah Terima HP", desc: "Ketemu langsung di lokasi yang disepakati — serahkan HP, kami serahkan dana tunai saat itu juga." },
+  { n: "05", title: "Dana Cair di Tempat", desc: "Uang langsung diterima saat COD. Tidak perlu menunggu transfer." },
 ];
 
 export default function HomePage() {
@@ -242,7 +243,7 @@ export default function HomePage() {
             Cara Kerja Gadai
           </h2>
           <p style={{ color: "#6b7280", marginBottom: "48px", fontSize: "16px" }}>
-            Empat langkah mudah dari WhatsApp hingga dana cair.
+            Lima langkah mudah dari WhatsApp hingga dana cair — pencairan bisa COD di lokasi.
           </p>
 
           <div
