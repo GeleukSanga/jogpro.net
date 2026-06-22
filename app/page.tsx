@@ -140,7 +140,7 @@ export default function HomePage() {
                 maxWidth: "560px",
               }}
             >
-              Layanan gadai handphone terpercaya dan pencairan Shopee/TikTok Paylater. Proses 1 hari, aman, transparan. Melayani Daerah Istimewa Yogyakarta.
+              Gadai perorangan terpercaya — handphone & pencairan Shopee/TikTok Paylater. Proses 1 hari, aman, transparan. Melayani Daerah Istimewa Yogyakarta.
             </p>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
