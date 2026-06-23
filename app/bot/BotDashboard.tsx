@@ -2,48 +2,46 @@
 
 import { useEffect, useState, useCallback } from "react";
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 const SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPA_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 // ── helpers ──
-function fmt(n: number, dec = 2) {
-  return n?.toFixed(dec) ?? "—";
+function fmt(n: number | null | undefined, dec = 2) {
+  return n != null ? n.toFixed(dec) : "—";
 }
+function countAgo(iso: string) {
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (s < 60) return `${Math.floor(s)}s`;
+  if (s < 3600) return `${Math.floor(s / 60)}m`;
+  return `${Math.floor(s / 3600)}h`;
+}
+const dirColor = (d: string) =>
+  d === "LONG" ? "text-[#00e676]" : d === "SHORT" ? "text-[#ff5252]" : "text-[#ffd740]";
 
-// ── types ──
-interface SignalRow {
+const dirBg = (d: string) =>
+  d === "LONG"
+    ? "bg-[#00e67620]"
+    : d === "SHORT"
+      ? "bg-[#ff525220]"
+      : "bg-[#ffd74020]";
+
+interface Signal {
   id: number;
   created_at: string;
   symbol: string;
   direction: string;
   confidence: number;
   session_name: string;
-  vix: number;
-  qqq_move_pct: number;
-  stocks_aligned: number;
-  chk_vix: boolean;
-  chk_qqq: boolean;
-  chk_stocks: boolean;
-  chk_futures: boolean;
-  chk_session: boolean;
   reason: string;
-  us30_bid: number;
-  us30_ask: number;
-  spx_bid: number;
-  spx_ask: number;
+  us30_bid: number | null;
+  us30_ask: number | null;
+  spx_bid: number | null;
+  spx_ask: number | null;
 }
 
-const CHECKS = [
-  { key: "chk_vix", label: "VIX", detail: "below 20" },
-  { key: "chk_qqq", label: "QQQ", detail: "aligned" },
-  { key: "chk_stocks", label: "MAG7", detail: "aligned" },
-  { key: "chk_futures", label: "Futures", detail: "ES/NQ" },
-  { key: "chk_session", label: "Session", detail: "NYSE cash" },
-] as const;
-
-// ── component ──
 export default function BotDashboard() {
-  const [signals, setSignals] = useState<SignalRow[]>([]);
+  const [signals, setSignals] = useState<Signal[]>([]);
   const [updatedAt, setUpdatedAt] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -51,14 +49,11 @@ export default function BotDashboard() {
   const fetchSignals = useCallback(async () => {
     try {
       const res = await fetch(
-        `${SUPA_URL}/rest/v1/bot_signals?select=*&order=created_at.desc&limit=50`,
-        {
-          headers: { apikey: SUPA_ANON, Authorization: `Bearer ${SUPA_ANON}` },
-          cache: "no-store",
-        }
+        `${SUPA_URL}/rest/v1/bot_signals?select=id,created_at,symbol,direction,confidence,session_name,reason,us30_bid,us30_ask,spx_bid,spx_ask&order=created_at.desc&limit=40`,
+        { headers: { apikey: SUPA_ANON, Authorization: `Bearer ${SUPA_ANON}` }, cache: "no-store" }
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const rows: SignalRow[] = await res.json();
+      const rows: Signal[] = await res.json();
       setSignals(rows || []);
       setUpdatedAt(new Date().toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta" }));
       setError("");
@@ -71,184 +66,195 @@ export default function BotDashboard() {
 
   useEffect(() => {
     fetchSignals();
-    const t = setInterval(fetchSignals, 15_000);
+    const t = setInterval(fetchSignals, 10_000);
     return () => clearInterval(t);
   }, [fetchSignals]);
 
   // ── loading / error / empty ──
-  if (loading) return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-[#6b6b8a]">
-      Loading...
-    </div>
-  );
-  if (error) return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-[#ff5252]">
-      Error: {error}
-    </div>
-  );
-  if (!signals.length) return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-[#6b6b8a]">
-      Waiting for first signal...
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-[#6b6b8a] text-sm">
+        Loading signals…
+      </div>
+    );
+  if (error)
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-[#ff5252] text-sm px-4 text-center">
+        Error: {error}
+      </div>
+    );
+  if (!signals.length)
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center gap-3 text-sm">
+        <span className="w-4 h-4 rounded-full bg-[#6b6b8a] animate-pulse" />
+        <span className="text-[#6b6b8a]">Waiting for first signal…</span>
+      </div>
+    );
 
+  // latest overall + per-symbol
   const latest = signals[0];
-  const checkedCount = CHECKS.filter((c) => (latest as unknown as Record<string, boolean>)[c.key] === true).length;
+  const us30 = signals.filter((s) => s.symbol === "US30");
+  const spx = signals.filter((s) => s.symbol === "USSPX500");
+  const us30Latest = us30[0] ?? null;
+  const spxLatest = spx[0] ?? null;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-[#e2e2f0] font-sans text-sm">
-      {/* HEADER — exact copy of Conf Bot */}
+    <div className="min-h-screen bg-[#0a0a0f] text-[#e2e2f0] font-mono text-sm">
+      {/* ── HEADER ── */}
       <header className="sticky top-0 z-50 bg-[#111118] border-b border-[#242433] px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className={`w-2.5 h-2.5 rounded-full shadow-[0_0_8px_#00e676] animate-pulse ${
-            latest.confidence >= 75 ? "bg-[#00e676]" : "bg-[#ffd740]"
-          }`} />
+          <span
+            className={`w-2.5 h-2.5 rounded-full shadow-[0_0_8px_#00e676] animate-pulse ${
+              latest.direction !== "NEUTRAL" ? "bg-[#00e676]" : "bg-[#6b6b8a]"
+            }`}
+          />
           <h1 className="font-semibold text-base tracking-wide">
-            Signal <span className="text-[#448aff]">Bot</span>
+            PSAR <span className="text-[#448aff]">Bot</span>
           </h1>
+          <span className="text-xs text-[#6b6b8a] bg-[#16161f] px-2 py-0.5 rounded">
+            {latest.session_name}
+          </span>
         </div>
         <div className="text-xs text-[#6b6b8a]">
-          Last update: {updatedAt} WIB
-          &nbsp;·&nbsp; {latest.session_name}
+          Updated {updatedAt} WIB · {signals.length} signals
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-
-        {/* STAT CARDS — same grid as Conf Bot */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {[
-            { label: "US30 Bid", value: fmt(latest.us30_bid, 2), color: "text-[#00e676]" },
-            { label: "US30 Ask", value: fmt(latest.us30_ask, 2), color: "text-[#ff5252]" },
-            { label: "Spread 30", value: fmt((latest.us30_ask ?? 0) - (latest.us30_bid ?? 0), 2), color: "text-[#448aff]" },
-            { label: "SPX Bid", value: fmt(latest.spx_bid, 2), color: "text-[#00e676]" },
-            { label: "SPX Ask", value: fmt(latest.spx_ask, 2), color: "text-[#ff5252]" },
-            { label: "Confidence", value: `${latest.confidence}%`, color: latest.confidence >= 75 ? "text-[#00e676]" : "text-[#ffd740]" },
-          ].map((c) => (
-            <div key={c.label} className="bg-[#16161f] border border-[#242433] rounded-xl p-4">
-              <div className="text-xs text-[#6b6b8a] mb-1">{c.label}</div>
-              <div className={`text-2xl font-bold ${c.color}`}>{c.value}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* DIRECTION + CONTEXT row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: "Direction", value: latest.direction, color: latest.direction === "LONG" ? "text-[#00e676]" : "text-[#ff5252]" },
-            { label: "VIX", value: latest.vix, color: "text-[#e2e2f0]" },
-            { label: "QQQ", value: `${latest.qqq_move_pct >= 0 ? "+" : ""}${latest.qqq_move_pct}%`, color: latest.qqq_move_pct >= 0 ? "text-[#00e676]" : "text-[#ff5252]" },
-            { label: "MAG7 Aligned", value: `${latest.stocks_aligned}/7`, color: "text-[#448aff]" },
-          ].map((c) => (
-            <div key={c.label} className="bg-[#16161f] border border-[#242433] rounded-xl p-4">
-              <div className="text-xs text-[#6b6b8a] mb-1">{c.label}</div>
-              <div className={`text-2xl font-bold ${c.color}`}>{c.value}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* CONFLUENCE CHECKLIST — Open Trades style */}
-        <section>
-          <h2 className="text-xs font-semibold text-[#6b6b8a] uppercase tracking-widest mb-3">
-            Confluence Checklist
-            <span className="ml-2 text-[#448aff]">({checkedCount}/{CHECKS.length})</span>
-          </h2>
-          <div className="space-y-3">
-            {CHECKS.map((c) => {
-              const v = latest as unknown as Record<string, boolean>;
-              const ok = v[c.key] === true;
-              return (
-                <div key={c.key} className="bg-[#16161f] border border-[#242433] rounded-xl p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className={`text-sm ${ok ? "text-[#00e676]" : "text-[#3a3a4a]"}`}>
-                        {ok ? "●" : "○"}
-                      </span>
-                      <div>
-                        <div className="font-semibold text-sm">{c.label}</div>
-                        <div className="text-xs text-[#6b6b8a]">{c.detail}</div>
-                      </div>
-                    </div>
-                    <span className={`text-xs px-2 py-0.5 rounded font-semibold ${
-                      ok ? "bg-[#00e67620] text-[#00e676]" : "bg-[#24243320] text-[#6b6b8a]"
-                    }`}>
-                      {ok ? "CONFIRMED" : "PENDING"}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* CONFIDENCE + REASON */}
-        <section>
-          <h2 className="text-xs font-semibold text-[#6b6b8a] uppercase tracking-widest mb-3">
-            Signal Confidence
-          </h2>
-          <div className="bg-[#16161f] border border-[#242433] rounded-xl p-4">
-            <div className="flex items-center gap-4 mb-3">
-              <span className={`text-4xl font-bold ${
-                latest.confidence >= 75 ? "text-[#00e676]" : latest.confidence >= 50 ? "text-[#ffd740]" : "text-[#ff5252]"
-              }`}>
-                {latest.confidence}%
+      <main className="max-w-5xl mx-auto px-4 py-6 space-y-5">
+        {/* ── INSTRUMENT CARDS ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* US30 */}
+          <div className="bg-[#16161f] border border-[#242433] rounded-xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold text-[#6b6b8a] uppercase tracking-widest">
+                US30
               </span>
-              <div className="flex-1">
-                <div className="w-full bg-[#242433] rounded-full h-2.5">
-                  <div
-                    className={`h-2.5 rounded-full ${
-                      latest.confidence >= 75 ? "bg-[#00e676]" : latest.confidence >= 50 ? "bg-[#ffd740]" : "bg-[#ff5252]"
-                    }`}
-                    style={{ width: `${Math.min(latest.confidence, 100)}%` }}
-                  />
-                </div>
-              </div>
+              {us30Latest ? (
+                <span
+                  className={`text-xs px-2 py-0.5 rounded font-bold ${dirBg(us30Latest.direction)} ${dirColor(us30Latest.direction)}`}
+                >
+                  {us30Latest.direction}
+                </span>
+              ) : (
+                <span className="text-xs text-[#6b6b8a]">NO SIGNAL</span>
+              )}
             </div>
-            <div className="text-xs text-[#6b6b8a]">{latest.reason || "—"}</div>
+            {us30Latest ? (
+              <>
+                <div className="flex items-baseline gap-3 mb-1">
+                  <span className="text-3xl font-bold text-[#e2e2f0]">
+                    {fmt(us30Latest.us30_bid ?? us30Latest.us30_ask, 2)}
+                  </span>
+                  <span className="text-xs text-[#6b6b8a]">bid</span>
+                </div>
+                <p className="text-xs text-[#6b6b8a] truncate">
+                  {us30Latest.reason}
+                </p>
+                <p className="text-xs text-[#52525b] mt-1">
+                  {countAgo(us30Latest.created_at)} ago
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-[#6b6b8a]">No US30 signals yet.</p>
+            )}
           </div>
+
+          {/* USSPX500 */}
+          <div className="bg-[#16161f] border border-[#242433] rounded-xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-semibold text-[#6b6b8a] uppercase tracking-widest">
+                USSPX500
+              </span>
+              {spxLatest ? (
+                <span
+                  className={`text-xs px-2 py-0.5 rounded font-bold ${dirBg(spxLatest.direction)} ${dirColor(spxLatest.direction)}`}
+                >
+                  {spxLatest.direction}
+                </span>
+              ) : (
+                <span className="text-xs text-[#6b6b8a]">NO SIGNAL</span>
+              )}
+            </div>
+            {spxLatest ? (
+              <>
+                <div className="flex items-baseline gap-3 mb-1">
+                  <span className="text-3xl font-bold text-[#e2e2f0]">
+                    {fmt(spxLatest.spx_bid ?? spxLatest.spx_ask, 2)}
+                  </span>
+                  <span className="text-xs text-[#6b6b8a]">bid</span>
+                </div>
+                <p className="text-xs text-[#6b6b8a] truncate">
+                  {spxLatest.reason}
+                </p>
+                <p className="text-xs text-[#52525b] mt-1">
+                  {countAgo(spxLatest.created_at)} ago
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-[#6b6b8a]">No SPX signals yet.</p>
+            )}
+          </div>
+        </div>
+
+        {/* ── LATEST SIGNAL ── */}
+        <section className="bg-[#16161f] border border-[#242433] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[#6b6b8a] uppercase tracking-widest mb-3">
+            Latest Signal
+          </h2>
+          <div className="flex flex-wrap items-center gap-4">
+            <span
+              className={`text-lg font-bold px-3 py-1 rounded ${dirBg(latest.direction)} ${dirColor(latest.direction)}`}
+            >
+              {latest.direction}
+            </span>
+            <span className="text-lg font-bold text-[#e2e2f0]">{latest.symbol}</span>
+            <span className="text-lg font-bold text-[#448aff]">{latest.confidence}%</span>
+          </div>
+          <p className="text-sm text-[#a0a0b8] mt-3 leading-relaxed">{latest.reason}</p>
+          <p className="text-xs text-[#52525b] mt-2">
+            {new Date(latest.created_at).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })} WIB
+          </p>
         </section>
 
-        {/* SIGNAL HISTORY TABLE — copy Recent Trades style */}
+        {/* ── SIGNAL HISTORY TABLE ── */}
         <section>
           <h2 className="text-xs font-semibold text-[#6b6b8a] uppercase tracking-widest mb-3">
-            Signal History
-            <span className="ml-2 text-[#448aff]">({signals.length})</span>
+            Signal History{" "}
+            <span className="text-[#448aff]">({signals.length})</span>
           </h2>
-          <div className="bg-[#16161f] border border-[#242433] rounded-xl overflow-hidden">
-            <table className="w-full text-xs">
+          <div className="bg-[#16161f] border border-[#242433] rounded-xl overflow-x-auto">
+            <table className="w-full text-xs whitespace-nowrap">
               <thead>
                 <tr className="border-b border-[#242433] text-[#6b6b8a]">
-                  {["Time", "Symbol", "Dir", "Conf", "VIX", "QQQ", "MAG7", "Confluence"].map((h) => (
-                    <th key={h} className="px-3 py-2 text-left font-medium">{h}</th>
+                  {["Time", "Symbol", "Dir", "Conf", "Price", "Reason"].map((h) => (
+                    <th key={h} className="px-3 py-2.5 text-left font-medium">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {signals.slice(0, 20).map((s, i) => {
-                  const cnt = CHECKS.filter((c) => (s as unknown as Record<string, boolean>)[c.key] === true).length;
+                {signals.slice(0, 30).map((s) => {
+                  const price =
+                    s.symbol === "US30"
+                      ? s.us30_bid ?? s.us30_ask
+                      : s.spx_bid ?? s.spx_ask;
                   return (
-                    <tr key={s.id || i} className="border-b border-[#1a1a26] hover:bg-[#1a1a26]">
+                    <tr key={s.id} className="border-b border-[#1a1a26] hover:bg-[#1a1a26]">
                       <td className="px-3 py-2 text-[#6b6b8a]">
-                        {new Date(s.created_at).toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta" })}
+                        {new Date(s.created_at).toLocaleTimeString("id-ID", {
+                          timeZone: "Asia/Jakarta",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
                       </td>
                       <td className="px-3 py-2 font-semibold">{s.symbol}</td>
-                      <td className={`px-3 py-2 font-semibold ${s.direction === "LONG" ? "text-[#00e676]" : "text-[#ff5252]"}`}>
+                      <td className={`px-3 py-2 font-bold ${dirColor(s.direction)}`}>
                         {s.direction}
                       </td>
-                      <td className={`px-3 py-2 font-semibold ${s.confidence >= 75 ? "text-[#00e676]" : "text-[#ffd740]"}`}>
-                        {s.confidence}%
-                      </td>
-                      <td className="px-3 py-2">{s.vix}</td>
-                      <td className={`px-3 py-2 ${s.qqq_move_pct >= 0 ? "text-[#00e676]" : "text-[#ff5252]"}`}>
-                        {s.qqq_move_pct > 0 ? "+" : ""}{s.qqq_move_pct}%
-                      </td>
-                      <td className="px-3 py-2 text-[#e2e2f0]">{s.stocks_aligned}/7</td>
-                      <td className="px-3 py-2">
-                        <span className={`px-1.5 py-0.5 rounded font-semibold ${
-                          cnt >= 4 ? "bg-[#00e67620] text-[#00e676]" : "bg-[#ffd74020] text-[#ffd740]"
-                        }`}>
-                          {cnt}/{CHECKS.length}
-                        </span>
+                      <td className="px-3 py-2 text-[#448aff] font-semibold">{s.confidence}%</td>
+                      <td className="px-3 py-2">{fmt(price, 2)}</td>
+                      <td className="px-3 py-2 text-[#6b6b8a] max-w-xs truncate">
+                        {s.reason}
                       </td>
                     </tr>
                   );
@@ -258,12 +264,10 @@ export default function BotDashboard() {
           </div>
         </section>
 
-        {/* FOOTER */}
-        <div className="text-center text-xs text-[#6b6b8a] pb-4">
-          Auto-refresh 15s · Signal Bot · {signals.length} signals loaded
-          &nbsp;·&nbsp; Updated {updatedAt} WIB
+        {/* ── FOOTER ── */}
+        <div className="text-center text-xs text-[#52525b] pb-6">
+          Auto-refresh 10s · PSAR M1 · US30 + USSPX500 · Updated {updatedAt} WIB
         </div>
-
       </main>
     </div>
   );
