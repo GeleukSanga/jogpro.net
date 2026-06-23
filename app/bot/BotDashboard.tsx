@@ -1,20 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { useEffect, useState, useCallback } from "react";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPA_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 interface Signal {
   id: number;
@@ -38,364 +27,416 @@ interface Signal {
   spx_ask: number;
 }
 
-interface ChartPoint {
-  time: string;
-  us30: number;
-  spx: number;
+interface SignalRow {
+  id: number;
+  created_at: string;
+  symbol: string;
+  direction: string;
+  confidence: number;
+  session_name: string;
+  vix: number;
+  qqq_move_pct: number;
+  stocks_aligned: number;
+  chk_vix: boolean;
+  chk_qqq: boolean;
+  chk_stocks: boolean;
+  chk_futures: boolean;
+  chk_session: boolean;
+  reason: string;
+  us30_bid: number;
+  us30_ask: number;
+  spx_bid: number;
+  spx_ask: number;
+  // Supabase returns snake_case by default
+  [key: string]: unknown;
 }
 
-const CONFLUENCE_ITEMS = [
-  { key: "chk_vix", label: "VIX", desc: "Volatility Index" },
-  { key: "chk_qqq", label: "QQQ", desc: "Nasdaq 100 ETF" },
-  { key: "chk_stocks", label: "Stocks", desc: "MAG7 alignment" },
-  { key: "chk_futures", label: "Futures", desc: "ES/NQ futures" },
-  { key: "chk_session", label: "Session", desc: "NYSE cash session" },
+const CHECKS = [
+  { key: "chk_vix", label: "VIX", detail: "below 20" },
+  { key: "chk_qqq", label: "QQQ", detail: "aligned" },
+  { key: "chk_stocks", label: "MAG7", detail: "aligned" },
+  { key: "chk_futures", label: "Futures", detail: "ES/NQ" },
+  { key: "chk_session", label: "Session", detail: "NYSE cash" },
 ] as const;
 
 export default function BotDashboard() {
-  const [latest, setLatest] = useState<Signal | null>(null);
-  const [chartData, setChartData] = useState<ChartPoint[]>([]);
+  const [signals, setSignals] = useState<Signal[]>([]);
+  const [chartData, setChartData] = useState<{ time: string; us30: number; spx: number }[]>([]);
+  const [updatedAt, setUpdatedAt] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [lastUpdate, setLastUpdate] = useState<string>("");
 
-  const fetchData = async () => {
-    const { data } = await supabase
-      .from("bot_signals")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(50);
+  const fetchSignals = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `${SUPA_URL}/rest/v1/bot_signals?select=*&order=created_at.desc&limit=50`,
+        {
+          headers: {
+            apikey: SUPA_ANON,
+            Authorization: `Bearer ${SUPA_ANON}`,
+          },
+          cache: "no-store",
+        }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const rows: SignalRow[] = await res.json();
+      if (!rows?.length) {
+        setSignals([]);
+        setError("");
+        setLoading(false);
+        return;
+      }
 
-    if (!data || data.length === 0) {
-      setLoading(false);
-      return;
-    }
+      const parsed: Signal[] = rows.map((r) => ({
+        id: r.id,
+        created_at: r.created_at,
+        symbol: r.symbol,
+        direction: r.direction,
+        confidence: r.confidence,
+        session_name: r.session_name,
+        vix: r.vix,
+        qqq_move_pct: r.qqq_move_pct,
+        stocks_aligned: r.stocks_aligned,
+        chk_vix: (r as Record<string, unknown>).chk_vix as boolean,
+        chk_qqq: (r as Record<string, unknown>).chk_qqq as boolean,
+        chk_stocks: (r as Record<string, unknown>).chk_stocks as boolean,
+        chk_futures: (r as Record<string, unknown>).chk_futures as boolean,
+        chk_session: (r as Record<string, unknown>).chk_session as boolean,
+        reason: r.reason,
+        us30_bid: r.us30_bid,
+        us30_ask: r.us30_ask,
+        spx_bid: r.spx_bid,
+        spx_ask: r.spx_ask,
+      }));
 
-    setLatest(data[0]);
+      setSignals(parsed);
 
-    // Build chart points from history (oldest → newest)
-    const points: ChartPoint[] = data
-      .reverse()
-      .map((s) => ({
-        time: new Date(s.created_at).toLocaleTimeString("id-ID", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+      // Build chart from oldest → newest
+      const points = [...parsed].reverse().map((s) => ({
+        time: new Date(s.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
         us30: s.us30_bid,
         spx: s.spx_bid,
       }));
-    setChartData(points);
-    setLastUpdate(new Date().toLocaleTimeString("id-ID"));
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchData();
-
-    // Poll every 30s
-    const interval = setInterval(fetchData, 30_000);
-
-    // Supabase realtime subscription
-    const channel = supabase
-      .channel("bot_signals_changes")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "bot_signals" },
-        () => fetchData()
-      )
-      .subscribe();
-
-    return () => {
-      clearInterval(interval);
-      supabase.removeChannel(channel);
-    };
+      setChartData(points);
+      setUpdatedAt(new Date().toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta" }));
+      setError("");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-zinc-950 text-white">
-        <div className="animate-pulse text-zinc-400">Loading dashboard...</div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    fetchSignals();
+    const t = setInterval(fetchSignals, 15_000);
+    return () => clearInterval(t);
+  }, [fetchSignals]);
 
-  if (!latest) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-zinc-950 text-white">
-        <div className="text-center space-y-4">
-          <p className="text-4xl">📡</p>
-          <p className="text-zinc-400">Waiting for first signal...</p>
-          <p className="text-xs text-zinc-600">
-            No signals in bot_signals table yet.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // ---------------------------------------------------------------
+  // LOADING / ERROR / EMPTY
+  // ---------------------------------------------------------------
+  if (loading) return (
+    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-[#6b6b8a] text-sm">
+      Loading...
+    </div>
+  );
+  if (error) return (
+    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-[#ff5252] text-sm">
+      Error: {error}
+    </div>
+  );
+  if (!signals.length) return (
+    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-[#6b6b8a] text-sm">
+      Waiting for first signal...
+    </div>
+  );
 
-  const confluenceCount = CONFLUENCE_ITEMS.filter(
-    (c) => latest[c.key as keyof Signal]
-  ).length;
-  const totalChecks = CONFLUENCE_ITEMS.length;
+  const latest = signals[0];
+  const us30 = latest.us30_bid ?? 0;
+  const spx = latest.spx_bid ?? 0;
+  const spread30 = (latest.us30_ask ?? 0) - (latest.us30_bid ?? 0);
+  const spreadSpx = (latest.spx_ask ?? 0) - (latest.spx_bid ?? 0);
+  const checkedCount = CHECKS.filter((c) => {
+    const v = latest as unknown as Record<string, boolean>;
+    return v[c.key] === true;
+  }).length;
+  const totalChecks = CHECKS.length;
 
-  const us30Price = latest.us30_bid;
-  const spxPrice = latest.spx_bid;
-  const spread30 = latest.us30_ask - latest.us30_bid;
-  const spreadSPX = latest.spx_ask - latest.spx_bid;
-
+  // ---------------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------------
   return (
-    <div className="min-h-screen bg-zinc-950 text-white p-6 md:p-10 font-mono">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Trading Dashboard</h1>
-          <p className="text-sm text-zinc-500">
-            Session: {latest.session_name} · Updated {lastUpdate}
-          </p>
+    <div className="min-h-screen bg-[#0a0a0f] text-[#e2e2f0] font-sans text-sm">
+      {/* HEADER */}
+      <header className="sticky top-0 z-50 bg-[#111118] border-b border-[#242433] px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className={`w-2.5 h-2.5 rounded-full shadow-[0_0_8px_#00e676] animate-pulse ${
+            latest.confidence >= 75 ? "bg-[#00e676]" : "bg-[#ffd740]"
+          }`} />
+          <h1 className="font-semibold text-base tracking-wide">
+            Signal <span className="text-[#448aff]">Bot</span>
+          </h1>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-xs text-zinc-400">LIVE</span>
+        <div className="text-xs text-[#6b6b8a]">
+          Last update: {updatedAt} WIB
+          &nbsp;·&nbsp; {latest.session_name}
         </div>
-      </div>
+      </header>
 
-      {/* Price Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {/* US30 */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-bold">US30</h2>
-            <span
-              className={`text-xs px-2 py-0.5 rounded ${
-                latest.direction === "LONG"
-                  ? "bg-green-500/20 text-green-400"
-                  : "bg-red-500/20 text-red-400"
-              }`}
-            >
-              {latest.direction}
-            </span>
-          </div>
-          <p className="text-3xl font-bold tracking-tight">
-            {us30Price?.toLocaleString("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </p>
-          <div className="flex gap-4 mt-2 text-xs text-zinc-500">
-            <span>Bid: {latest.us30_bid?.toFixed(2)}</span>
-            <span>Ask: {latest.us30_ask?.toFixed(2)}</span>
-            <span>Spread: {spread30?.toFixed(2)}</span>
-          </div>
-        </div>
+      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
 
-        {/* SPX500 */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg font-bold">USSPX500</h2>
-            <span
-              className={`text-xs px-2 py-0.5 rounded ${
-                latest.direction === "LONG"
-                  ? "bg-green-500/20 text-green-400"
-                  : "bg-red-500/20 text-red-400"
-              }`}
-            >
-              {latest.direction}
-            </span>
-          </div>
-          <p className="text-3xl font-bold tracking-tight">
-            {spxPrice?.toLocaleString("en-US", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </p>
-          <div className="flex gap-4 mt-2 text-xs text-zinc-500">
-            <span>Bid: {latest.spx_bid?.toFixed(2)}</span>
-            <span>Ask: {latest.spx_ask?.toFixed(2)}</span>
-            <span>Spread: {spreadSPX?.toFixed(2)}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Price Chart */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 mb-6">
-        <h2 className="text-lg font-bold mb-4">Price Trend</h2>
-        {chartData.length < 2 ? (
-          <div className="flex items-center justify-center h-48 text-zinc-500 text-sm">
-            Collecting data... need 2+ signals for chart.
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-              <XAxis
-                dataKey="time"
-                stroke="#52525b"
-                tick={{ fontSize: 11 }}
-              />
-              <YAxis
-                stroke="#52525b"
-                tick={{ fontSize: 11 }}
-                domain={["auto", "auto"]}
-              />
-              <Tooltip
-                contentStyle={{
-                  background: "#18181b",
-                  border: "1px solid #3f3f46",
-                  borderRadius: "8px",
-                  color: "#fff",
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="us30"
-                stroke="#22c55e"
-                strokeWidth={2}
-                dot={false}
-                name="US30"
-              />
-              <Line
-                type="monotone"
-                dataKey="spx"
-                stroke="#3b82f6"
-                strokeWidth={2}
-                dot={false}
-                name="SPX500"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-      </div>
-
-      {/* Confluence Checklist + Confidence */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {/* Checklist */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
-          <h2 className="text-lg font-bold mb-4">Confluence Checklist</h2>
-          <div className="space-y-3">
-            {CONFLUENCE_ITEMS.map((item) => {
-              const checked = latest[item.key as keyof Signal] as boolean;
-              return (
-                <div
-                  key={item.key}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-lg ${
-                        checked ? "text-green-400" : "text-zinc-600"
-                      }`}
-                    >
-                      {checked ? "✅" : "⬜"}
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium">{item.label}</p>
-                      <p className="text-xs text-zinc-500">{item.desc}</p>
-                    </div>
-                  </div>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded ${
-                      checked
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-zinc-800 text-zinc-500"
-                    }`}
-                  >
-                    {checked ? "CONFIRMED" : "PENDING"}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-4 pt-3 border-t border-zinc-800 text-xs text-zinc-500">
-            {confluenceCount}/{totalChecks} confluence checks passed
-          </div>
+        {/* PRICE CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            {
+              symbol: "US30",
+              price: us30,
+              spread: spread30,
+              bid: latest.us30_bid,
+              ask: latest.us30_ask,
+            },
+            {
+              symbol: "USSPX500",
+              price: spx,
+              spread: spreadSpx,
+              bid: latest.spx_bid,
+              ask: latest.spx_ask,
+            },
+          ].map((p) => (
+            <div key={p.symbol} className="bg-[#16161f] border border-[#242433] rounded-xl p-5">
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-xs text-[#6b6b8a] uppercase tracking-widest">{p.symbol}</div>
+                <span className={`text-xs px-2 py-0.5 rounded font-semibold ${
+                  latest.direction === "LONG"
+                    ? "bg-[#00e67620] text-[#00e676]"
+                    : "bg-[#ff525220] text-[#ff5252]"
+                }`}>
+                  {latest.direction}
+                </span>
+              </div>
+              <div className="text-3xl font-bold text-[#e2e2f0]">
+                {p.price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div className="flex gap-4 mt-2 text-xs text-[#6b6b8a]">
+                <span>Bid <span className="text-[#00e676]">{(p.bid ?? 0).toFixed(2)}</span></span>
+                <span>Ask <span className="text-[#ff5252]">{(p.ask ?? 0).toFixed(2)}</span></span>
+                <span>Spread {p.spread.toFixed(2)}</span>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Confidence Gauge */}
-        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
-          <h2 className="text-lg font-bold mb-4">Signal Confidence</h2>
-
-          {/* Circular gauge */}
-          <div className="flex items-center justify-center mb-4">
-            <div className="relative w-36 h-36">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="52"
-                  fill="none"
-                  stroke="#27272a"
-                  strokeWidth="10"
-                />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="52"
-                  fill="none"
-                  stroke={
-                    latest.confidence >= 75
-                      ? "#22c55e"
-                      : latest.confidence >= 50
-                      ? "#eab308"
-                      : "#ef4444"
-                  }
-                  strokeWidth="10"
-                  strokeLinecap="round"
-                  strokeDasharray={`${(latest.confidence / 100) * 327} 327`}
-                />
+        {/* CHART */}
+        <section>
+          <h2 className="text-xs font-semibold text-[#6b6b8a] uppercase tracking-widest mb-3">
+            Price Trend ({chartData.length} points)
+          </h2>
+          {chartData.length < 2 ? (
+            <div className="bg-[#16161f] border border-[#242433] rounded-xl p-6 text-center text-[#6b6b8a] italic">
+              Collecting data — need 2+ signals for chart
+            </div>
+          ) : (
+            <div className="bg-[#16161f] border border-[#242433] rounded-xl p-4 overflow-x-auto">
+              {/* Simple SVG sparkline */}
+              <svg
+                viewBox={`0 0 ${Math.max(chartData.length * 40, 200)} 120`}
+                className="w-full h-48"
+                preserveAspectRatio="none"
+              >
+                {/* Grid lines */}
+                {[0, 30, 60, 90, 120].map((y) => (
+                  <line key={y} x1={0} y1={y} x2={chartData.length * 40} y2={y} stroke="#242433" strokeWidth="0.5" />
+                ))}
+                {/* US30 line */}
+                {(() => {
+                  const vals = chartData.map((d) => d.us30);
+                  const min = Math.min(...vals);
+                  const max = Math.max(...vals);
+                  const range = max - min || 1;
+                  const points = vals
+                    .map((v, i) => `${i * 40},${120 - ((v - min) / range) * 100 - 10}`)
+                    .join(" ");
+                  return <polyline points={points} fill="none" stroke="#00e676" strokeWidth="1.5" />;
+                })()}
+                {/* SPX line */}
+                {(() => {
+                  const vals = chartData.map((d) => d.spx);
+                  const min = Math.min(...vals);
+                  const max = Math.max(...vals);
+                  const range = max - min || 1;
+                  const points = vals
+                    .map((v, i) => `${i * 40},${120 - ((v - min) / range) * 100 - 10}`)
+                    .join(" ");
+                  return <polyline points={points} fill="none" stroke="#448aff" strokeWidth="1.5" />;
+                })()}
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-3xl font-bold">{latest.confidence}%</span>
+              <div className="flex justify-center gap-6 mt-2 text-xs">
+                <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-[#00e676] inline-block" /> US30</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-[#448aff] inline-block" /> SPX500</span>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* CONFLUENCE + CONFIDENCE */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          {/* Confluence Checklist */}
+          <div className="lg:col-span-3 bg-[#16161f] border border-[#242433] rounded-xl p-5">
+            <h2 className="text-xs font-semibold text-[#6b6b8a] uppercase tracking-widest mb-4">
+              Confluence &nbsp;
+              <span className="text-[#448aff]">{checkedCount}/{totalChecks}</span>
+            </h2>
+            <div className="space-y-3">
+              {CHECKS.map((c) => {
+                const v = latest as unknown as Record<string, boolean>;
+                const ok = v[c.key] === true;
+                return (
+                  <div key={c.key} className="flex items-center justify-between py-2 border-b border-[#1a1a26] last:border-0">
+                    <div className="flex items-center gap-3">
+                      <span className={`text-lg ${ok ? "text-[#00e676]" : "text-[#3a3a4a]"}`}>
+                        {ok ? "●" : "○"}
+                      </span>
+                      <div>
+                        <div className="font-medium text-sm">{c.label}</div>
+                        <div className="text-xs text-[#6b6b8a]">{c.detail}</div>
+                      </div>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded font-semibold ${
+                      ok
+                        ? "bg-[#00e67620] text-[#00e676]"
+                        : "bg-[#24243320] text-[#6b6b8a]"
+                    }`}>
+                      {ok ? "✓ OK" : "PENDING"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Confidence + Market Context */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Confidence Card */}
+            <div className="bg-[#16161f] border border-[#242433] rounded-xl p-5">
+              <div className="text-xs text-[#6b6b8a] uppercase tracking-widest mb-3">Confidence</div>
+              <div className="text-center mb-3">
+                <span className={`text-5xl font-bold ${
+                  latest.confidence >= 75
+                    ? "text-[#00e676]"
+                    : latest.confidence >= 50
+                    ? "text-[#ffd740]"
+                    : "text-[#ff5252]"
+                }`}>
+                  {latest.confidence}%
+                </span>
+              </div>
+              {/* Progress bar */}
+              <div className="w-full bg-[#242433] rounded-full h-2 mb-3">
+                <div
+                  className={`h-2 rounded-full transition-all duration-500 ${
+                    latest.confidence >= 75
+                      ? "bg-[#00e676]"
+                      : latest.confidence >= 50
+                      ? "bg-[#ffd740]"
+                      : "bg-[#ff5252]"
+                  }`}
+                  style={{ width: `${Math.min(latest.confidence, 100)}%` }}
+                />
+              </div>
+              <div className="text-xs text-[#6b6b8a]">
+                {latest.reason || "—"}
+              </div>
+            </div>
+
+            {/* Market Context Card */}
+            <div className="bg-[#16161f] border border-[#242433] rounded-xl p-5">
+              <div className="text-xs text-[#6b6b8a] uppercase tracking-widest mb-3">Market Context</div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="text-center">
+                  <div className="text-[#6b6b8a] text-xs mb-1">VIX</div>
+                  <div className="text-xl font-bold text-[#e2e2f0]">{latest.vix}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[#6b6b8a] text-xs mb-1">QQQ</div>
+                  <div className={`text-xl font-bold ${latest.qqq_move_pct >= 0 ? "text-[#00e676]" : "text-[#ff5252]"}`}>
+                    {latest.qqq_move_pct > 0 ? "+" : ""}{latest.qqq_move_pct}%
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[#6b6b8a] text-xs mb-1">MAG7</div>
+                  <div className="text-xl font-bold text-[#448aff]">{latest.stocks_aligned}/7</div>
+                </div>
               </div>
             </div>
           </div>
-
-          {/* Confidence bar */}
-          <div className="w-full bg-zinc-800 rounded-full h-3 mb-3">
-            <div
-              className={`h-3 rounded-full transition-all duration-500 ${
-                latest.confidence >= 75
-                  ? "bg-green-500"
-                  : latest.confidence >= 50
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
-              }`}
-              style={{ width: `${latest.confidence}%` }}
-            />
-          </div>
-
-          {/* Reason */}
-          <div className="mt-4 p-3 bg-zinc-800 rounded-lg">
-            <p className="text-xs text-zinc-500 mb-1">Reason</p>
-            <p className="text-sm text-zinc-300">
-              {latest.reason || "—"}
-            </p>
-          </div>
-
-          {/* Market context */}
-          <div className="grid grid-cols-3 gap-2 mt-3 text-center text-xs">
-            <div className="bg-zinc-800 rounded p-2">
-              <p className="text-zinc-500">VIX</p>
-              <p className="font-bold text-white">{latest.vix}</p>
-            </div>
-            <div className="bg-zinc-800 rounded p-2">
-              <p className="text-zinc-500">QQQ</p>
-              <p
-                className={`font-bold ${
-                  latest.qqq_move_pct >= 0 ? "text-green-400" : "text-red-400"
-                }`}
-              >
-                {latest.qqq_move_pct > 0 ? "+" : ""}
-                {latest.qqq_move_pct}%
-              </p>
-            </div>
-            <div className="bg-zinc-800 rounded p-2">
-              <p className="text-zinc-500">Stocks</p>
-              <p className="font-bold text-white">
-                {latest.stocks_aligned}/7
-              </p>
-            </div>
-          </div>
         </div>
-      </div>
+
+        {/* SIGNAL HISTORY TABLE */}
+        <section>
+          <h2 className="text-xs font-semibold text-[#6b6b8a] uppercase tracking-widest mb-3">
+            Signal History ({signals.length})
+          </h2>
+          <div className="bg-[#16161f] border border-[#242433] rounded-xl overflow-hidden">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-[#242433] text-[#6b6b8a]">
+                  {["Time", "Symbol", "Dir", "Confidence", "VIX", "QQQ", "MAG7", "Confluence"].map((h) => (
+                    <th key={h} className="px-3 py-2 text-left font-medium">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {signals.slice(0, 20).map((s) => {
+                  const cnt = CHECKS.filter((c) => {
+                    const v = s as unknown as Record<string, boolean>;
+                    return v[c.key] === true;
+                  }).length;
+                  return (
+                    <tr key={s.id} className="border-b border-[#1a1a26] hover:bg-[#1a1a26]">
+                      <td className="px-3 py-2 text-[#6b6b8a]">
+                        {new Date(s.created_at).toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta" })}
+                      </td>
+                      <td className="px-3 py-2 font-semibold">{s.symbol}</td>
+                      <td className={`px-3 py-2 font-semibold ${
+                        s.direction === "LONG" ? "text-[#00e676]" : "text-[#ff5252]"
+                      }`}>
+                        {s.direction}
+                      </td>
+                      <td className={`px-3 py-2 font-semibold ${
+                        s.confidence >= 75 ? "text-[#00e676]" : "text-[#ffd740]"
+                      }`}>
+                        {s.confidence}%
+                      </td>
+                      <td className="px-3 py-2">{s.vix}</td>
+                      <td className={`px-3 py-2 ${s.qqq_move_pct >= 0 ? "text-[#00e676]" : "text-[#ff5252]"}`}>
+                        {s.qqq_move_pct > 0 ? "+" : ""}{s.qqq_move_pct}%
+                      </td>
+                      <td className="px-3 py-2 text-[#448aff]">{s.stocks_aligned}/7</td>
+                      <td className="px-3 py-2">
+                        <span className={`px-1.5 py-0.5 rounded font-semibold ${
+                          cnt >= 4
+                            ? "bg-[#00e67620] text-[#00e676]"
+                            : "bg-[#ffd74020] text-[#ffd740]"
+                        }`}>
+                          {cnt}/{totalChecks}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* FOOTER */}
+        <div className="text-center text-xs text-[#6b6b8a] pb-4">
+          Auto-refresh 15s · Signal Bot · {signals.length} signals loaded
+          &nbsp;·&nbsp; Updated {updatedAt} WIB
+        </div>
+
+      </main>
     </div>
   );
 }
