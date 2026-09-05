@@ -204,7 +204,7 @@ export default function CheckoutPage() {
                 <p className="text-lg font-black">{formatPrice(product.price)}</p>
               </div>
               <div className="mt-6 flex flex-col gap-5 sm:flex-row">
-                <img src={product.image} alt={product.name} className="h-44 w-full rounded-2xl object-cover object-center sm:w-36" />
+                <img src={product.image} alt={product.name} className="w-full rounded-2xl object-cover object-center sm:w-36" style={{ aspectRatio: '9/16' }} />
                 <div className="flex-1">
                   <p className="text-xs font-black uppercase tracking-[0.16em] text-[#999]">Pilih warna</p>
                   <div className="mt-3 flex flex-wrap gap-2">
