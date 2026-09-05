@@ -35,13 +35,13 @@ export async function GET(request: NextRequest) {
     }
 
     const destinations = (data.data || []).map((item: Record<string, unknown>) => ({
-      id: item.city_id || item.id,
+      id: item.id,
       name: item.city_name || item.name,
-      province: item.province,
-      type: item.type,
-      postal_code: item.postal_code,
-      subdistrict_id: item.subdistrict_id,
-      subdistrict_name: item.subdistrict_name,
+      label: item.label,
+      province: item.province_name,
+      district: item.district_name,
+      subdistrict: item.subdistrict_name,
+      postal_code: item.zip_code,
     }))
 
     return NextResponse.json({

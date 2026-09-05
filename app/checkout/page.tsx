@@ -14,7 +14,10 @@ const products = {
 interface City {
   id: string | number
   name: string
+  label?: string
   province?: string
+  district?: string
+  subdistrict?: string
   postal_code?: string
 }
 
@@ -244,10 +247,10 @@ export default function CheckoutPage() {
                     <div className="absolute left-0 right-0 top-[4.6rem] z-10 max-h-48 overflow-auto rounded-xl border border-black/10 bg-white p-1 shadow-xl">
                       {originResults.map((city) => (
                         <button type="button" key={city.id}
-                          onClick={() => { setOriginSelected(city); setOriginSearch(city.name); setOriginOpen(false) }}
+                          onClick={() => { setOriginSelected(city); setOriginSearch(`${city.subdistrict}, ${city.name}`); setOriginOpen(false) }}
                           className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-xs hover:bg-[#d7ff3f]">
-                          <span>{city.name}</span>
-                          <span className="text-[9px] text-[#999]">{city.province}</span>
+                          <span>{city.subdistrict}, {city.name}</span>
+                          <span className="text-[9px] text-[#999]">{city.postal_code}</span>
                         </button>
                       ))}
                     </div>
@@ -270,10 +273,10 @@ export default function CheckoutPage() {
                     <div className="absolute left-0 right-0 top-[4.6rem] z-10 max-h-48 overflow-auto rounded-xl border border-black/10 bg-white p-1 shadow-xl">
                       {destResults.map((city) => (
                         <button type="button" key={city.id}
-                          onClick={() => { setDestSelected(city); setDestSearch(city.name); setDestOpen(false) }}
+                          onClick={() => { setDestSelected(city); setDestSearch(`${city.subdistrict}, ${city.name}`); setDestOpen(false) }}
                           className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-xs hover:bg-[#d7ff3f]">
-                          <span>{city.name}</span>
-                          <span className="text-[9px] text-[#999]">{city.province}</span>
+                          <span>{city.subdistrict}, {city.name}</span>
+                          <span className="text-[9px] text-[#999]">{city.postal_code}</span>
                         </button>
                       ))}
                     </div>
