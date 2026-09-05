@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createOrder, getOrder } from '@/lib/db'
+import { createOrder, getOrder } from '@/lib/supabase'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +15,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const orderId = createOrder({
+    const orderId = await createOrder({
       product_id,
       custom_name: custom_name || null,
       color: color || null,
@@ -26,7 +28,14 @@ export async function POST(request: NextRequest) {
       payment_method: 'bca_transfer',
     })
 
-    const order = getOrder(orderId)
+    if (!orderId) {
+      return NextResponse.json(
+        { success: false, message: 'Gagal membuat order' },
+        { status: 500 }
+      )
+    }
+
+    const order = await getOrder(orderId)
 
     return NextResponse.json({
       success: true,
@@ -54,7 +63,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const order = getOrder(Number(id))
+    const order = await getOrder(Number(id))
 
     if (!order) {
       return NextResponse.json(
