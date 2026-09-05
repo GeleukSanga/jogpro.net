@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createOrder, getOrder } from '@/lib/supabase'
+import { createOrder, getOrder, getProducts } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
+
+const VALID_PRODUCTS = ['neon-drip', 'dragon-duo', 'your-name', 'gothic-guardian']
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { product_id, custom_name, color, origin_city, destination_city, courier, shipping_cost, total } = body
+    const { product_id, custom_name, color, origin_city, destination_city, courier, shipping_cost, total, recipient_name, recipient_phone, recipient_address } = body
 
     if (!product_id || !total) {
       return NextResponse.json(
         { success: false, message: 'product_id dan total wajib diisi' },
+        { status: 400 }
+      )
+    }
+
+    if (!VALID_PRODUCTS.includes(product_id)) {
+      return NextResponse.json(
+        { success: false, message: 'Produk tidak valid' },
         { status: 400 }
       )
     }
@@ -26,6 +35,9 @@ export async function POST(request: NextRequest) {
       total: Number(total),
       status: 'pending',
       payment_method: 'bca_transfer',
+      recipient_name: recipient_name || null,
+      recipient_phone: recipient_phone || null,
+      recipient_address: recipient_address || null,
     })
 
     if (!orderId) {
