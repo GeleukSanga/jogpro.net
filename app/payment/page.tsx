@@ -8,13 +8,16 @@ const formatPrice = (value: string | null) => `Rp ${Number(value || 0).toLocaleS
 export default function PaymentPage() {
   const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
   const total = params?.get('total') || '0'
-  const product = params?.get('product') || 'Pesanan JOGPRO'
+  const product = params?.get('product') || ''
+  const productName = params?.get('product_name') || 'Pesanan JOGPRO'
   const color = params?.get('color') || ''
   const name = params?.get('name') || ''
-  const origin = params?.get('origin') || ''
   const destination = params?.get('destination') || ''
   const courier = params?.get('courier') || ''
   const shippingCost = params?.get('shipping_cost') || '0'
+  const recipientName = params?.get('recipient_name') || ''
+  const recipientPhone = params?.get('recipient_phone') || ''
+  const recipientAddress = params?.get('recipient_address') || ''
 
   const [copied, setCopied] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
@@ -36,11 +39,14 @@ export default function PaymentPage() {
           product_id: product,
           custom_name: name || null,
           color: color || null,
-          origin_city: origin || null,
+          origin_city: 'SERPONG, TANGERANG SELATAN',
           destination_city: destination || null,
           courier: courier || null,
           shipping_cost: Number(shippingCost),
           total: Number(total),
+          recipient_name: recipientName,
+          recipient_phone: recipientPhone,
+          recipient_address: recipientAddress,
         }),
       })
       setConfirmed(true)
@@ -98,12 +104,22 @@ export default function PaymentPage() {
 
             <div className="mt-8 border-t border-black/10 pt-6">
               <p className="text-xs font-black uppercase tracking-[0.16em] text-[#999]">Detail pesanan</p>
-              <p className="mt-2 text-sm font-bold">{product.replace(/-/g, ' ')}</p>
+              <p className="mt-2 text-sm font-bold">{productName}</p>
               {color && <p className="mt-1 text-xs text-[#888]">Warna: {color}</p>}
               {name && <p className="mt-1 text-xs text-[#888]">Custom: {name}</p>}
               {courier && <p className="mt-1 text-xs text-[#888]">Kurir: {courier}</p>}
               <p className="mt-1 text-xs text-[#888]">Pembayaran manual via transfer bank</p>
             </div>
+
+            {recipientName && (
+              <div className="mt-6 border-t border-black/10 pt-6">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-[#999]">Pengiriman ke</p>
+                <p className="mt-2 text-sm font-bold">{recipientName}</p>
+                <p className="mt-1 text-xs text-[#888]">{recipientPhone}</p>
+                <p className="mt-1 text-xs text-[#888]">{recipientAddress}</p>
+                <p className="mt-1 text-xs text-[#888]">{destination}</p>
+              </div>
+            )}
           </section>
 
           <section className="rounded-[1.75rem] bg-[#171717] p-6 text-white sm:p-8">

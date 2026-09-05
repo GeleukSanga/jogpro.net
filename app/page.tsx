@@ -57,7 +57,10 @@ export default function Page() {
   const visibleProducts = useMemo(() => filter === 'Semua' ? products : products.filter((product) => product.kind === filter), [filter])
 
   function buy(product: typeof products[number]) {
-    window.location.href = `/checkout?product=${product.id}&name=${encodeURIComponent(customName)}`
+    const url = product.kind === 'Case custom'
+      ? `/checkout?product=${product.id}&name=${encodeURIComponent(customName)}`
+      : `/checkout?product=${product.id}`
+    window.location.href = url
   }
 
   return (
