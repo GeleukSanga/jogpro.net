@@ -30,6 +30,9 @@ export interface Order {
   status: string
   payment_method: string
   created_at: string
+  recipient_name: string | null
+  recipient_phone: string | null
+  recipient_address: string | null
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -73,6 +76,9 @@ export async function createOrder(order: Omit<Order, 'id' | 'created_at'>): Prom
       total: order.total,
       status: order.status,
       payment_method: order.payment_method,
+      recipient_name: order.recipient_name,
+      recipient_phone: order.recipient_phone,
+      recipient_address: order.recipient_address,
     })
     .select('id')
     .single()
