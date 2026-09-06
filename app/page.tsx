@@ -20,7 +20,7 @@ const products = [
     name: 'Dragon Duo',
     kind: 'Case motif',
     price: 'Rp 20.000',
-    image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_45_40%20PM-tJyA6aPHDrHuxAPCtmKQ090M8rwsUk.png',
+    image: '/dragon-duo-black.png',
     tag: 'Limited',
     accent: 'blue',
     description: 'Relief naga 3D untuk statement piece yang ikonik.',

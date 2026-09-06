@@ -6,7 +6,7 @@ import { ArrowLeft, Flame, Loader2, MapPin, Search, Truck } from 'lucide-react'
 
 const products = {
   'neon-drip': { id: 'neon-drip', name: 'Neon Drip', kind: 'case_motif', price: 20000, image: '/neon-drip-black.png', colors: ['Black', 'White', 'Beige'] },
-  'dragon-duo': { id: 'dragon-duo', name: 'Dragon Duo', kind: 'case_motif', price: 20000, image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_45_40%20PM-tJyA6aPHDrHuxAPCtmKQ090M8rwsUk.png', colors: ['Black', 'White', 'Beige'] },
+  'dragon-duo': { id: 'dragon-duo', name: 'Dragon Duo', kind: 'case_motif', price: 20000, image: '/dragon-duo-black.png', colors: ['Black', 'White', 'Beige'] },
   'your-name': { id: 'your-name', name: 'Your Name', kind: 'case_custom', price: 25000, image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_49_25%20PM-vYnuJFMY7Ne117XB3x1tj5GZsxzgkL.png', colors: ['Black', 'White', 'Beige'] },
   'gothic-guardian': { id: 'gothic-guardian', name: 'Gothic Guardian', kind: 'case_motif', price: 20000, image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_43_40%20PM-LSxDzqXc7EloDpwQ906cQvdFUA14ie.png', colors: ['Black', 'White', 'Beige'] },
 } as const
