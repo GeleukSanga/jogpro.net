@@ -91,7 +91,7 @@ const products = [
     name: 'Hawaii',
     kind: 'Case motif',
     price: 'Rp 20.000',
-    image: '/23fcfb9d6e05a4a3.jpg.png',
+    image: '/hawaii-v2.png',
     tag: 'Exclusive',
     accent: 'green',
     description: 'Nuansa tropis Hawaii dengan motif bunga yang ceria.',
