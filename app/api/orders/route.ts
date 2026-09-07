@@ -3,7 +3,7 @@ import { createOrder, getOrder, getProducts } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
 
-const VALID_PRODUCTS = ['neon-drip', 'dragon-duo', 'your-name', 'gothic-guardian', 'mystic-flame', 'cyber-skull', 'dragon-royal', 'shadow-beast', 'neon-viper', 'fire-dragon', 'cosmic-warrior']
+const VALID_PRODUCTS = ['neon-drip', 'dragon-duo', 'your-name', 'gothic-guardian', 'koi', 'monkey-freak', 'o-sign', 'viking-skull', 'hawaii', 'old-skull', 'gator']
 
 export async function POST(request: NextRequest) {
   try {
