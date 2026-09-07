@@ -51,7 +51,7 @@ const products = [
     name: 'Koi',
     kind: 'Case motif',
     price: 'Rp 20.000',
-    image: '/921497f19e75f121.png.png',
+    image: '/koi-v2.png',
     tag: 'New',
     accent: 'orange',
     description: 'Ikan koi elegan dengan detail sirip yang dinamis.',
