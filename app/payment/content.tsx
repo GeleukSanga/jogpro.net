@@ -120,7 +120,7 @@ export default function PaymentContent() {
                 {copied ? <Check className="size-4 text-[#d7ff3f]" /> : <Clipboard className="size-4" />}
               </button>
             </div>
-            <p className="mt-3 text-xs text-white/40">a.n. Yohanes Laurensius</p>
+
 
             <div className="mt-6 rounded-xl bg-white/5 p-4">
               <p className="text-xs text-white/50">Nominal transfer</p>
