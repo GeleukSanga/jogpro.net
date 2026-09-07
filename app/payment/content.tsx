@@ -33,33 +33,11 @@ export default function PaymentContent() {
     window.setTimeout(() => setCopied(false), 2200)
   }
 
-  async function confirmPayment() {
-    setLoading(true)
-    try {
-      await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product_id: product,
-          custom_name: name || null,
-          color: color || null,
-          origin_city: 'SERPONG, TANGERANG SELATAN',
-          destination_city: destination || null,
-          courier: courier || null,
-          shipping_cost: Number(shippingCost),
-          total: Number(total),
-          recipient_name: recipientName,
-          recipient_phone: recipientPhone,
-          recipient_address: recipientAddress,
-        }),
-      })
-      setConfirmed(true)
-    } catch {
-      console.error('Gagal simpan order')
-      setConfirmed(true)
-    } finally {
-      setLoading(false)
-    }
+  function confirmPayment() {
+    const message = `Halo JOGPRO, saya sudah transfer!\n\nProduk: ${productName}\nWarna: ${color}\nTotal: ${formatPrice(total)}\n\nMohon dicek ya. Terima kasih!`
+    const whatsappUrl = `https://wa.me/628972523968?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, '_blank')
+    setConfirmed(true)
   }
 
   if (!mounted) return (
@@ -77,7 +55,7 @@ export default function PaymentContent() {
         <p className="mt-6 text-xs font-black uppercase tracking-[0.2em] text-black/50">Konfirmasi terkirim</p>
         <h1 className="mt-2 text-4xl font-black tracking-[-0.07em]">Terima kasih.</h1>
         <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-black/60">
-          Tim JOGPRO akan memeriksa pembayaranmu dan menghubungi kamu untuk proses pengiriman.
+          Kamu akan diarahkan ke WhatsApp JOGPRO untuk konfirmasi pembayaran. Tim kami akan memeriksa dan menghubungi kamu untuk proses pengiriman.
         </p>
         <a href="/" className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#171717] px-5 py-3.5 text-sm font-bold text-white">
           <ArrowLeft className="size-4" /> Kembali ke home
@@ -150,13 +128,13 @@ export default function PaymentContent() {
             </div>
 
             <p className="mt-4 text-[10px] leading-5 text-white/30">
-              Transfer dengan nominal yang tepat. Setelah transfer, klik tombol konfirmasi di bawah.
+              Transfer dengan nominal yang tepat. Setelah transfer, klik tombol konfirmasi di bawah untuk chat WhatsApp.
             </p>
 
-            <button type="button" onClick={confirmPayment} disabled={loading}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#d7ff3f] py-3.5 text-sm font-bold text-[#171717] transition hover:scale-[1.02] disabled:opacity-40">
-              {loading ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
-              {loading ? 'Mengirim...' : 'Sudah transfer'}
+            <button type="button" onClick={confirmPayment}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#d7ff3f] py-3.5 text-sm font-bold text-[#171717] transition hover:scale-[1.02]">
+              <svg className="size-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              Konfirmasi via WhatsApp
             </button>
           </section>
         </div>
