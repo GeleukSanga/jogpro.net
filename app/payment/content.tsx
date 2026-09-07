@@ -34,7 +34,7 @@ export default function PaymentContent() {
   }
 
   function confirmPayment() {
-    const message = `Halo JOGPRO, saya sudah transfer!\n\nProduk: ${productName}\nWarna: ${color}\nTotal: ${formatPrice(total)}\n\nMohon dicek ya. Terima kasih!`
+    const message = `Halo JOGPRO, saya sudah transfer!\n\n🛒 *Rincian Pesanan:*\n• Produk: ${productName}\n• Warna: ${color}${name ? `\n• Custom: ${name}` : ''}\n• Kurir: ${courier}\n• Total: ${formatPrice(total)}\n\n📦 *Alamat Pengiriman:*\n• Nama: ${recipientName}\n• No. HP: ${recipientPhone}\n• Alamat: ${recipientAddress}\n• Kota: ${destination}\n\nMohon dicek ya. Terima kasih!`
     const whatsappUrl = `https://wa.me/628972523968?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
     setConfirmed(true)
