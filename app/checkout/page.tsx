@@ -9,6 +9,13 @@ const products = {
   'dragon-duo': { id: 'dragon-duo', name: 'Dragon Duo', kind: 'case_motif', price: 20000, image: '/dragon-duo-black.png', colors: ['Black', 'White', 'Beige'] },
   'your-name': { id: 'your-name', name: 'Your Name', kind: 'case_custom', price: 25000, image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_49_25%20PM-vYnuJFMY7Ne117XB3x1tj5GZsxzgkL.png', colors: ['Black', 'White', 'Beige'] },
   'gothic-guardian': { id: 'gothic-guardian', name: 'Gothic Guardian', kind: 'case_motif', price: 20000, image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_43_40%20PM-LSxDzqXc7EloDpwQ906cQvdFUA14ie.png', colors: ['Black', 'White', 'Beige'] },
+  'koi': { id: 'koi', name: 'Koi', kind: 'case_motif', price: 20000, image: '/koi-v2.png', colors: ['Orange', 'White', 'Gold'] },
+  'monkey-freak': { id: 'monkey-freak', name: 'Monkey Freak', kind: 'case_motif', price: 20000, image: '/6d1ae703b608c1eb.jpg.png', colors: ['Cyan', 'Black', 'White'] },
+  'o-sign': { id: 'o-sign', name: 'O-Sign', kind: 'case_motif', price: 20000, image: '/2025-08-31_4972dd651a843.png.png', colors: ['Gold', 'Black', 'Silver'] },
+  'viking-skull': { id: 'viking-skull', name: 'Viking Skull', kind: 'case_motif', price: 20000, image: '/0fe3cc4b18358d5b.png.png', colors: ['Black', 'Gray', 'Brown'] },
+  'hawaii': { id: 'hawaii', name: 'Hawaii', kind: 'case_motif', price: 20000, image: '/hawaii-v2.png', colors: ['Green', 'Pink', 'White'] },
+  'old-skull': { id: 'old-skull', name: 'Old Skull', kind: 'case_motif', price: 20000, image: '/2c3f11fc0a5b0e14.jpg.png', colors: ['Red', 'Orange', 'Black'] },
+  'gator': { id: 'gator', name: 'Gator', kind: 'case_motif', price: 20000, image: '/gator-v2.png', colors: ['Purple', 'Green', 'Black'] },
 } as const
 
 interface City { id: string | number; name: string; subdistrict?: string; postal_code?: string }
@@ -22,7 +29,7 @@ export default function CheckoutPage() {
   const router = useRouter()
   const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
   const productKey = (params?.get('product') as keyof typeof products) || 'neon-drip'
-  const product = products[productKey]
+  const product = products[productKey] || products['neon-drip']
   const isCustom = product.kind === 'case_custom'
 
   const [color, setColor] = useState(product.colors[0])
