@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createOrder, getOrder, getProducts } from '@/lib/supabase'
+import { createOrder, getOrder, getProducts } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
 
-const VALID_PRODUCTS = ['neon-drip', 'dragon-duo', 'your-name', 'gothic-guardian']
+const VALID_PRODUCTS = ['neon-drip', 'dragon-duo', 'your-name', 'gothic-guardian', 'mystic-flame', 'cyber-skull', 'dragon-royal', 'shadow-beast', 'neon-viper', 'fire-dragon', 'cosmic-warrior']
 
 export async function POST(request: NextRequest) {
   try {
