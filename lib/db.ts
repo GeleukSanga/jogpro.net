@@ -36,7 +36,7 @@ const products: Product[] = [
   { id: 'viking-skull', name: 'Viking Skull', kind: 'case_motif', price: 20000, description: 'Tengkorak Viking dengan detail helm yang garang.', tag: 'Bold', accent: 'dark', colors: JSON.stringify(['Black', 'Gray', 'Brown']), image_url: '/0fe3cc4b18358d5b.png.png' },
   { id: 'hawaii', name: 'Hawaii', kind: 'case_motif', price: 20000, description: 'Nuansa tropis Hawaii dengan motif bunga yang ceria.', tag: 'Exclusive', accent: 'green', colors: JSON.stringify(['Green', 'Pink', 'White']), image_url: '/hawaii-v2.png' },
   { id: 'old-skull', name: 'Old Skull', kind: 'case_motif', price: 20000, description: 'Tengkorak klasik dengan sentuhan vintage yang keren.', tag: 'Hot', accent: 'red', colors: JSON.stringify(['Red', 'Orange', 'Black']), image_url: '/2c3f11fc0a5b0e14.jpg.png' },
-  { id: 'gator', name: 'Gator', kind: 'case_motif', price: 20000, description: 'Buaya Gator dengan desain agresif yang maskulin.', tag: 'Space', accent: 'purple', colors: JSON.stringify(['Purple', 'Green', 'Black']), image_url: '/a33feb7b7ce0c963.png.png' },
+  { id: 'gator', name: 'Gator', kind: 'case_motif', price: 20000, description: 'Buaya Gator dengan desain agresif yang maskulin.', tag: 'Space', accent: 'purple', colors: JSON.stringify(['Purple', 'Green', 'Black']), image_url: '/gator-v2.png' },
 ]
 
 let orders: Order[] = []

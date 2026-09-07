@@ -111,7 +111,7 @@ const products = [
     name: 'Gator',
     kind: 'Case motif',
     price: 'Rp 20.000',
-    image: '/a33feb7b7ce0c963.png.png',
+    image: '/gator-v2.png',
     tag: 'Space',
     accent: 'purple',
     description: 'Buaya Gator dengan desain agresif yang maskulin.',
