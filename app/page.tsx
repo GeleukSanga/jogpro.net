@@ -61,7 +61,7 @@ const products = [
     name: 'Monkey Freak',
     kind: 'Case motif',
     price: 'Rp 20.000',
-    image: '/6d1ae703b608c1eb.jpg.png',
+    image: '/monkey-freak-v2.png',
     tag: 'Trendy',
     accent: 'cyan',
     description: 'Monyet liar dengan ekspresi freak yang unik.',
