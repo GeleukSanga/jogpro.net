@@ -12,7 +12,7 @@ const products = {
   'koi': { id: 'koi', name: 'Koi', kind: 'case_motif', price: 20000, image: '/koi-v2.png', colors: ['Black', 'White', 'Beige'] },
   'monkey-freak': { id: 'monkey-freak', name: 'Monkey Freak', kind: 'case_motif', price: 20000, image: '/6d1ae703b608c1eb.jpg.png', colors: ['Black', 'White', 'Beige'] },
   'o-sign': { id: 'o-sign', name: 'O-Sign', kind: 'case_motif', price: 20000, image: '/2025-08-31_4972dd651a843.png.png', colors: ['Black', 'White', 'Beige'] },
-  'viking-skull': { id: 'viking-skull', name: 'Viking Skull', kind: 'case_motif', price: 20000, image: '/0fe3cc4b18358d5b.png.png', colors: ['Black', 'White', 'Beige'] },
+  'viking-skull': { id: 'viking-skull', name: 'Viking Skull', kind: 'case_motif', price: 20000, image: '/viking-skull-v2.png', colors: ['Black', 'White', 'Beige'] },
   'hawaii': { id: 'hawaii', name: 'Hawaii', kind: 'case_motif', price: 20000, image: '/hawaii-v2.png', colors: ['Black', 'White', 'Beige'] },
   'old-skull': { id: 'old-skull', name: 'Old Skull', kind: 'case_motif', price: 20000, image: '/2c3f11fc0a5b0e14.jpg.png', colors: ['Black', 'White', 'Beige'] },
   'gator': { id: 'gator', name: 'Gator', kind: 'case_motif', price: 20000, image: '/gator-v2.png', colors: ['Black', 'White', 'Beige'] },

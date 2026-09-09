@@ -81,7 +81,7 @@ const products = [
     name: 'Viking Skull',
     kind: 'Case motif',
     price: 'Rp 20.000',
-    image: '/0fe3cc4b18358d5b.png.png',
+    image: '/viking-skull-v2.png',
     tag: 'Bold',
     accent: 'dark',
     description: 'Tengkorak Viking dengan detail helm yang garang.',
