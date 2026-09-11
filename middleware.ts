@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   // Protect /admin except /admin/login
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     const auth = request.cookies.get('admin_auth')?.value
-    if (auth !== '1') {
+    if (!auth || auth.length !== 64) {
       const url = request.nextUrl.clone()
       url.pathname = '/admin/login'
       return NextResponse.redirect(url)
@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
   // If already logged in and visit login, redirect to /admin
   if (pathname === '/admin/login') {
     const auth = request.cookies.get('admin_auth')?.value
-    if (auth === '1') {
+    if (auth && auth.length === 64) {
       const url = request.nextUrl.clone()
       url.pathname = '/admin'
       return NextResponse.redirect(url)

@@ -5,7 +5,23 @@ export const dynamic = 'force-dynamic'
 
 const VALID_PRODUCTS = ['neon-drip', 'dragon-duo', 'your-name', 'gothic-guardian', 'koi', 'monkey-freak', 'o-sign', 'viking-skull', 'hawaii', 'old-skull', 'gator']
 
+const RATE_LIMIT = new Map<string, { count: number; reset: number }>()
+function isRateLimited(ip: string) {
+  const now = Date.now()
+  const entry = RATE_LIMIT.get(ip)
+  if (!entry || now > entry.reset) {
+    RATE_LIMIT.set(ip, { count: 1, reset: now + 60_000 })
+    return false
+  }
+  entry.count++
+  return entry.count > 10 // max 10 orders per minute per IP
+}
+
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
+  if (isRateLimited(ip)) {
+    return NextResponse.json({ success: false, message: 'Terlalu banyak request, coba lagi 1 menit' }, { status: 429 })
+  }
   try {
     const body = await request.json()
     const { product_id, custom_name, color, origin_city, destination_city, courier, shipping_cost, total, recipient_name, recipient_phone, recipient_address } = body

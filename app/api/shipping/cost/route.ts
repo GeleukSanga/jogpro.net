@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY || '1623d3f9f8a48753dceae7f2002f17dc'
+const RAJAONGKIR_API_KEY = process.env.RAJAONGKIR_API_KEY || ''
 const RAJAONGKIR_BASE_URL = 'https://rajaongkir.komerce.id/api/v1'
+if (!RAJAONGKIR_API_KEY) console.warn('RAJAONGKIR_API_KEY missing - set in Vercel Env')
 
 export async function POST(request: NextRequest) {
   try {

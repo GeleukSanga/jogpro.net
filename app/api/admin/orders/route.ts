@@ -3,7 +3,20 @@ import { supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+async function isAdmin(request: NextRequest) {
+  const token = request.cookies.get('admin_auth')?.value
+  if (!token) return false
+  const HASH = process.env.ADMIN_PASSWORD_HASH || process.env.ADMIN_KEY || ''
+  if (!HASH) return false
+  const crypto = await import('crypto')
+  const expected = crypto.createHmac('sha256', HASH).update('jogpro-admin-v1').digest('hex')
+  return token === expected
+}
+
+export async function GET(request: NextRequest) {
+  if (!(await isAdmin(request))) {
+    return NextResponse.json({ success: false, message: 'Unauthorized - login admin dulu' }, { status: 401 })
+  }
   try {
     const { data, error } = await supabase
       .from('jogpro_orders')
@@ -20,6 +33,9 @@ export async function GET() {
 }
 
 export async function DELETE(request: NextRequest) {
+  if (!(await isAdmin(request))) {
+    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+  }
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')

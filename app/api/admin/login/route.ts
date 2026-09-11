@@ -24,8 +24,10 @@ export async function POST(request: NextRequest) {
 
     if (!ok) return NextResponse.json({ success: false, message: 'Password salah' }, { status: 401 })
 
+    const crypto = await import('crypto')
+    const token = crypto.createHmac('sha256', HASH).update('jogpro-admin-v1').digest('hex')
     const res = NextResponse.json({ success: true })
-    res.cookies.set('admin_auth', '1', {
+    res.cookies.set('admin_auth', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
