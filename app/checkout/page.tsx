@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Flame, Loader2, MapPin, Search, Truck } from 'lucide-react'
+import { fbqTrack } from '@/lib/fbPixel'
 
 const products = {
   'neon-drip': { id: 'neon-drip', name: 'Neon Drip', kind: 'case_motif', price: 20000, image: '/neon-drip-black.png', colors: ['Black', 'White', 'Beige'] },
@@ -87,6 +88,24 @@ export default function CheckoutPage() {
   const shipping = shippingCost?.cost || 0
   const total = product.price + shipping
 
+  useEffect(() => {
+    fbqTrack('ViewContent', {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: 'product',
+      value: product.price,
+      currency: 'IDR',
+    })
+    fbqTrack('InitiateCheckout', {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: 'product',
+      value: product.price,
+      currency: 'IDR',
+      num_items: 1,
+    })
+  }, [product.id, product.name, product.price])
+
   function submitOrder(e: React.FormEvent) {
     e.preventDefault()
     if (!destSelected) { setFormError('Pilih kota tujuan pengiriman.'); return }
@@ -96,6 +115,21 @@ export default function CheckoutPage() {
     if (isCustom && customName.trim().length < 2) { setFormError('Nama custom minimal 2 karakter.'); return }
     if (!shippingCost) { setFormError('Menunggu perhitungan ongkir.'); return }
     setFormError('')
+    fbqTrack('InitiateCheckout', {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: 'product',
+      value: total,
+      currency: 'IDR',
+      num_items: 1,
+    })
+    fbqTrack('AddToCart', {
+      content_name: product.name,
+      content_ids: [product.id],
+      content_type: 'product',
+      value: product.price,
+      currency: 'IDR',
+    })
     const p = new URLSearchParams({
       product: product.id,
       product_name: product.name,

@@ -25,7 +25,17 @@ export default function PaymentContent() {
   const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true)
+    // InitiateCheckout on payment page load
+    const value = Number(total) || 0
+    if (value > 0 && typeof window !== 'undefined' && (window as unknown as { fbq: unknown }).fbq) {
+      const fbq = (window as unknown as { fbq: (...a: unknown[]) => void }).fbq
+      fbq('track', 'InitiateCheckout', { value, currency: 'IDR', content_ids: [product], content_type: 'product' })
+    }
+  }, [total, product])
+
+  // Also create order in Supabase + Purchase event on confirm will be handled in confirmPayment
 
   async function copyAccount() {
     await navigator.clipboard.writeText('7805380306')
@@ -33,7 +43,54 @@ export default function PaymentContent() {
     window.setTimeout(() => setCopied(false), 2200)
   }
 
-  function confirmPayment() {
+  async function confirmPayment() {
+    // Save order to Supabase before WhatsApp
+    const urlParams = new URLSearchParams(window.location.search)
+    const productId = urlParams.get('product') || product
+    const colorVal = urlParams.get('color') || color
+    const originCity = urlParams.get('origin') || ''
+    const destinationCity = urlParams.get('destination') || destination
+    const courierVal = urlParams.get('courier') || courier
+    const shippingCostVal = Number(urlParams.get('shipping_cost') || shippingCost || 0)
+    const totalVal = Number(total) || 0
+    const searchRecipientName = urlParams.get('recipient_name') || recipientName
+    const searchRecipientPhone = urlParams.get('recipient_phone') || recipientPhone
+    const searchRecipientAddress = urlParams.get('recipient_address') || recipientAddress
+
+    // Purchase event with value
+    if (typeof window !== 'undefined' && (window as unknown as { fbq: unknown }).fbq) {
+      const fbq = (window as unknown as { fbq: (...a: unknown[]) => void }).fbq
+      fbq('track', 'Purchase', {
+        value: totalVal,
+        currency: 'IDR',
+        content_ids: [productId],
+        content_type: 'product',
+        num_items: 1,
+      })
+    }
+
+    try {
+      await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_id: productId,
+          custom_name: name || null,
+          color: colorVal || null,
+          origin_city: originCity || null,
+          destination_city: destinationCity || null,
+          courier: courierVal || null,
+          shipping_cost: shippingCostVal || null,
+          total: totalVal,
+          recipient_name: searchRecipientName || null,
+          recipient_phone: searchRecipientPhone || null,
+          recipient_address: searchRecipientAddress || null,
+        }),
+      })
+    } catch (e) {
+      console.error('Create order failed', e)
+    }
+
     const message = `Halo JOGPRO, saya sudah transfer!\n\n🛒 *Rincian Pesanan:*\n• Produk: ${productName}\n• Warna: ${color}${name ? `\n• Custom: ${name}` : ''}\n• Kurir: ${courier}\n• Total: ${formatPrice(total)}\n\n📦 *Alamat Pengiriman:*\n• Nama: ${recipientName}\n• No. HP: ${recipientPhone}\n• Alamat: ${recipientAddress}\n• Kota: ${destination}\n\nMohon dicek ya. Terima kasih!`
     const whatsappUrl = `https://wa.me/628972523968?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
