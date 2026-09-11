@@ -27,13 +27,12 @@ export default function PaymentContent() {
 
   useEffect(() => {
     setMounted(true)
-    // InitiateCheckout on payment page load
-    const value = Number(total) || 0
-    if (value > 0 && typeof window !== 'undefined' && (window as unknown as { fbq: unknown }).fbq) {
+    // InitiateCheckout tanpa value di payment page
+    if (typeof window !== 'undefined' && (window as unknown as { fbq: unknown }).fbq) {
       const fbq = (window as unknown as { fbq: (...a: unknown[]) => void }).fbq
-      fbq('track', 'InitiateCheckout', { value, currency: 'IDR', content_ids: [product], content_type: 'product' })
+      fbq('track', 'InitiateCheckout', { content_ids: [product], content_type: 'product' })
     }
-  }, [total, product])
+  }, [product])
 
   // Also create order in Supabase + Purchase event on confirm will be handled in confirmPayment
 

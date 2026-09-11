@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowRight, Flame, Menu, Pencil, ShoppingBag, Sparkles, X, Zap } from 'lucide-react'
-import { fbqTrack, parsePrice } from '@/lib/fbPixel'
+import { fbqTrack } from '@/lib/fbPixel'
 
 const products = [
   {
@@ -129,34 +129,27 @@ export default function Page() {
   const visibleProducts = useMemo(() => filter === 'Semua' ? products : products.filter((product) => product.kind === filter), [filter])
 
   useEffect(() => {
-    // ViewContent for visible products
+    // ViewContent tanpa value - hanya Purchase yang pakai value
     visibleProducts.forEach((p) => {
       fbqTrack('ViewContent', {
         content_name: p.name,
         content_ids: [p.id],
         content_type: 'product',
-        value: parsePrice(p.price),
-        currency: 'IDR',
       })
     })
   }, [visibleProducts])
 
   function buy(product: typeof products[number]) {
-    const value = parsePrice(product.price)
     fbqTrack('InitiateCheckout', {
       content_name: product.name,
       content_ids: [product.id],
       content_type: 'product',
-      value,
-      currency: 'IDR',
       num_items: 1,
     })
     fbqTrack('AddToCart', {
       content_name: product.name,
       content_ids: [product.id],
       content_type: 'product',
-      value,
-      currency: 'IDR',
     })
     const url = product.kind === 'Case custom'
       ? `/checkout?product=${product.id}&name=${encodeURIComponent(customName)}`

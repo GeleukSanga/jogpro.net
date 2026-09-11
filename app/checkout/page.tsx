@@ -93,18 +93,14 @@ export default function CheckoutPage() {
       content_name: product.name,
       content_ids: [product.id],
       content_type: 'product',
-      value: product.price,
-      currency: 'IDR',
     })
     fbqTrack('InitiateCheckout', {
       content_name: product.name,
       content_ids: [product.id],
       content_type: 'product',
-      value: product.price,
-      currency: 'IDR',
       num_items: 1,
     })
-  }, [product.id, product.name, product.price])
+  }, [product.id, product.name])
 
   function submitOrder(e: React.FormEvent) {
     e.preventDefault()
@@ -119,16 +115,12 @@ export default function CheckoutPage() {
       content_name: product.name,
       content_ids: [product.id],
       content_type: 'product',
-      value: total,
-      currency: 'IDR',
       num_items: 1,
     })
     fbqTrack('AddToCart', {
       content_name: product.name,
       content_ids: [product.id],
       content_type: 'product',
-      value: product.price,
-      currency: 'IDR',
     })
     const p = new URLSearchParams({
       product: product.id,
