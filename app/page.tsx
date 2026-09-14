@@ -8,7 +8,7 @@ const products = [
   {
     id: 'neon-drip',
     name: 'Neon Drip',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: '/neon-drip-black.png',
     heroImage: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_42_05%20PM-2gUW7il51MvD8mqs27gsvaugVsVJ6C.png',
@@ -19,7 +19,7 @@ const products = [
   {
     id: 'dragon-duo',
     name: 'Dragon Duo',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: '/dragon-duo-black.png',
     tag: 'Limited',
@@ -30,7 +30,7 @@ const products = [
   {
     id: 'your-name',
     name: 'Your Name',
-    kind: 'Case custom',
+    kind: 'Custom',
     price: 'Rp 25.000',
     image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_49_25%20PM-vYnuJFMY7Ne117XB3x1tj5GZsxzgkL.png',
     tag: 'Custom',
@@ -40,7 +40,7 @@ const products = [
   {
     id: 'gothic-guardian',
     name: 'Gothic Guardian',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_43_40%20PM-LSxDzqXc7EloDpwQ906cQvdFUA14ie.png',
     tag: 'New drop',
@@ -50,7 +50,7 @@ const products = [
   {
     id: 'koi',
     name: 'Koi',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: '/koi-v2.png',
     tag: 'New',
@@ -60,7 +60,7 @@ const products = [
   {
     id: 'monkey-freak',
     name: 'Monkey Freak',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: '/monkey-freak-v2.png',
     tag: 'Trendy',
@@ -70,7 +70,7 @@ const products = [
   {
     id: 'o-sign',
     name: 'O-Sign',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: '/2025-08-31_4972dd651a843.png.png',
     tag: 'Premium',
@@ -80,7 +80,7 @@ const products = [
   {
     id: 'viking-skull',
     name: 'Viking Skull',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: '/viking-skull-v2.png',
     tag: 'Bold',
@@ -90,7 +90,7 @@ const products = [
   {
     id: 'hawaii',
     name: 'Hawaii',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: '/hawaii-v2.png',
     tag: 'Exclusive',
@@ -100,7 +100,7 @@ const products = [
   {
     id: 'old-skull',
     name: 'Old Skull',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: '/2c3f11fc0a5b0e14.jpg.png',
     tag: 'Hot',
@@ -110,7 +110,7 @@ const products = [
   {
     id: 'gator',
     name: 'Gator',
-    kind: 'Case motif',
+    kind: 'Desain',
     price: 'Rp 20.000',
     image: '/gator-v2.png',
     tag: 'Space',
@@ -119,7 +119,7 @@ const products = [
   },
 ]
 
-const filters = ['Semua', 'Case motif', 'Case custom']
+const filters = ['Semua', 'Desain', 'Custom']
 
 export default function Page() {
   const [filter, setFilter] = useState('Semua')
@@ -151,7 +151,7 @@ export default function Page() {
       content_ids: [product.id],
       content_type: 'product',
     })
-    const url = product.kind === 'Case custom'
+    const url = product.kind === 'Custom'
       ? `/checkout?product=${product.id}&name=${encodeURIComponent(customName)}`
       : `/checkout?product=${product.id}`
     window.location.href = url
@@ -176,7 +176,7 @@ export default function Page() {
         <div className="hero-product-wrap"><div className="hero-ring ring-one" /><div className="hero-ring ring-two" /><div className="floating-chip chip-one"><Zap className="size-3 fill-current" /> tactile finish</div><div className="floating-chip chip-two">01 / 04</div><div className="hero-product"><img src={products[0].heroImage} alt="Case Neon Drip dengan korek api" /><div className="shine" /></div></div>
       </section>
 
-      <section id="shop" className="relative z-10 mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10"><div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#ef4b32]">The collection</p><h2 className="text-4xl font-black tracking-[-0.06em] sm:text-5xl">Pilih Gaya Kamu.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-[#666]">Case korek 3D dengan desain unik yang dibuat untuk dipakai setiap hari.</p></div><div className="flex flex-wrap gap-2">{filters.map((item) => <button key={item} onClick={() => setFilter(item)} className={`rounded-full px-4 py-2 text-xs font-bold transition ${filter === item ? 'bg-[#171717] text-white' : 'border border-black/10 bg-white text-[#777] hover:border-black/30'}`}>{item}</button>)}</div></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{visibleProducts.map((product) => <article key={product.id} className="product-card group"><div className={`product-image accent-${product.accent}`}><span className="product-tag">{product.tag}</span><img src={product.image} alt={`${product.name}, ${product.kind}`} style={product.objectPosition ? { objectPosition: product.objectPosition } : undefined} /><div className="card-shine" /></div><div className="flex items-start justify-between gap-3 pt-4"><div><p className="mb-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#999]">{product.kind}</p><h3 className="text-lg font-black tracking-[-0.04em]">{product.name}</h3><p className="mt-1 text-xs leading-5 text-[#777]">{product.description}</p></div><p className="whitespace-nowrap text-sm font-black">{product.price}</p></div><button onClick={() => buy(product)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-black/10 bg-white py-3 text-xs font-black transition hover:bg-[#171717] hover:text-white">{product.kind === 'Case custom' ? 'Custom Sekarang' : 'Pilih Punyamu'} <ArrowRight className="size-3.5" /></button></article>)}</div></section>
+      <section id="shop" className="relative z-10 mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10"><div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#ef4b32]">The collection</p><h2 className="text-4xl font-black tracking-[-0.06em] sm:text-5xl">Pilih Gaya Kamu.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-[#666]">Case korek 3D dengan desain unik yang dibuat untuk dipakai setiap hari.</p></div><div className="flex flex-wrap gap-2">{filters.map((item) => <button key={item} onClick={() => setFilter(item)} className={`rounded-full px-4 py-2 text-xs font-bold transition ${filter === item ? 'bg-[#171717] text-white' : 'border border-black/10 bg-white text-[#777] hover:border-black/30'}`}>{item}</button>)}</div></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{visibleProducts.map((product) => <article key={product.id} className="product-card group"><div className={`product-image accent-${product.accent}`}><span className="product-tag">{product.tag}</span><img src={product.image} alt={`${product.name}, ${product.kind}`} style={product.objectPosition ? { objectPosition: product.objectPosition } : undefined} /><div className="card-shine" /></div><div className="flex items-start justify-between gap-3 pt-4"><div><p className="mb-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#999]">{product.kind}</p><h3 className="text-lg font-black tracking-[-0.04em]">{product.name}</h3><p className="mt-1 text-xs leading-5 text-[#777]">{product.description}</p></div><p className="whitespace-nowrap text-sm font-black">{product.price}</p></div><button onClick={() => buy(product)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-black/10 bg-white py-3 text-xs font-black transition hover:bg-[#171717] hover:text-white">{product.kind === 'Custom' ? 'Custom Sekarang' : 'Pilih Punyamu'} <ArrowRight className="size-3.5" /></button></article>)}</div></section>
 
       <section className="relative z-10 mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10"><div className="rounded-[2rem] border border-black/10 bg-white/75 px-6 py-10 shadow-sm sm:px-10 sm:py-12"><div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#ef4b32]">Built different</p><h2 className="text-4xl font-black tracking-[-0.06em] sm:text-5xl">Kenapa JOGPRO?</h2></div><p className="max-w-xs text-sm leading-6 text-[#777]">Case kecil dengan karakter besar untuk menemani keseharianmu.</p></div><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{[['01', '3D Printed', 'Dibuat dengan detail dan karakter yang berbeda.'], ['02', 'Custom Nama', 'Bikin case yang benar-benar personal.'], ['03', 'Desain Unik', 'Bukan case korek biasa yang pasaran.'], ['04', 'Made for Everyday', 'Ringan, praktis, dan dibuat untuk dipakai setiap hari.']].map(([number, title, description]) => <div key={number} className="rounded-2xl border border-black/10 bg-[#fbfbf8] p-5"><p className="text-2xl font-black tracking-[-0.06em] text-[#ef4b32]">{number}</p><h3 className="mt-8 text-base font-black tracking-[-0.04em]">{title}</h3><p className="mt-2 text-xs leading-5 text-[#777]">{description}</p></div>)}</div></div></section>
 
