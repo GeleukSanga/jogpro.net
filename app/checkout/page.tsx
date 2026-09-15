@@ -6,17 +6,17 @@ import { ArrowLeft, Flame, Loader2, MapPin, Search, Truck } from 'lucide-react'
 import { fbqTrack } from '@/lib/fbPixel'
 
 const products = {
-  'neon-drip': { id: 'neon-drip', name: 'Neon Drip', kind: 'Desain', price: 20000, image: '/neon-drip-black.png', colors: ['Black', 'White', 'Beige'] },
-  'dragon-duo': { id: 'dragon-duo', name: 'Dragon Duo', kind: 'Desain', price: 20000, image: '/dragon-duo-black.png', colors: ['Black', 'White', 'Beige'] },
-  'your-name': { id: 'your-name', name: 'Your Name', kind: 'Custom', price: 25000, image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_49_25%20PM-vYnuJFMY7Ne117XB3x1tj5GZsxzgkL.png', colors: ['Black', 'White', 'Beige'] },
-  'gothic-guardian': { id: 'gothic-guardian', name: 'Gothic Guardian', kind: 'Desain', price: 20000, image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_43_40%20PM-LSxDzqXc7EloDpwQ906cQvdFUA14ie.png', colors: ['Black', 'White', 'Beige'] },
-  'koi': { id: 'koi', name: 'Koi', kind: 'Desain', price: 20000, image: '/koi-v2.png', colors: ['Black', 'White', 'Beige'] },
-  'monkey-freak': { id: 'monkey-freak', name: 'Monkey Freak', kind: 'Desain', price: 20000, image: '/monkey-freak-v2.png', colors: ['Black', 'White', 'Beige'] },
-  'o-sign': { id: 'o-sign', name: 'O-Sign', kind: 'Desain', price: 20000, image: '/2025-08-31_4972dd651a843.png.png', colors: ['Black', 'White', 'Beige'] },
-  'viking-skull': { id: 'viking-skull', name: 'Viking Skull', kind: 'Desain', price: 20000, image: '/viking-skull-v2.png', colors: ['Black', 'White', 'Beige'] },
-  'hawaii': { id: 'hawaii', name: 'Hawaii', kind: 'Desain', price: 20000, image: '/hawaii-v2.png', colors: ['Black', 'White', 'Beige'] },
-  'old-skull': { id: 'old-skull', name: 'Old Skull', kind: 'Desain', price: 20000, image: '/2c3f11fc0a5b0e14.jpg.png', colors: ['Black', 'White', 'Beige'] },
-  'gator': { id: 'gator', name: 'Gator', kind: 'Desain', price: 20000, image: '/gator-v2.png', colors: ['Black', 'White', 'Beige'] },
+  'neon-drip': { id: 'neon-drip', name: 'Neon Drip', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/neon-drip-black.png', colors: ['Black', 'White', 'Beige'] },
+  'dragon-duo': { id: 'dragon-duo', name: 'Dragon Duo', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/dragon-duo-black.png', colors: ['Black', 'White', 'Beige'] },
+  'your-name': { id: 'your-name', name: 'Your Name', kind: 'Custom', price: 13500, oldPrice: 25000, image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_49_25%20PM-vYnuJFMY7Ne117XB3x1tj5GZsxzgkL.png', colors: ['Black', 'White', 'Beige'] },
+  'gothic-guardian': { id: 'gothic-guardian', name: 'Gothic Guardian', kind: 'Desain', price: 13500, oldPrice: 20000, image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_43_40%20PM-LSxDzqXc7EloDpwQ906cQvdFUA14ie.png', colors: ['Black', 'White', 'Beige'] },
+  'koi': { id: 'koi', name: 'Koi', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/koi-v2.png', colors: ['Black', 'White', 'Beige'] },
+  'monkey-freak': { id: 'monkey-freak', name: 'Monkey Freak', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/monkey-freak-v2.png', colors: ['Black', 'White', 'Beige'] },
+  'o-sign': { id: 'o-sign', name: 'O-Sign', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/2025-08-31_4972dd651a843.png.png', colors: ['Black', 'White', 'Beige'] },
+  'viking-skull': { id: 'viking-skull', name: 'Viking Skull', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/viking-skull-v2.png', colors: ['Black', 'White', 'Beige'] },
+  'hawaii': { id: 'hawaii', name: 'Hawaii', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/hawaii-v2.png', colors: ['Black', 'White', 'Beige'] },
+  'old-skull': { id: 'old-skull', name: 'Old Skull', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/2c3f11fc0a5b0e14.jpg.png', colors: ['Black', 'White', 'Beige'] },
+  'gator': { id: 'gator', name: 'Gator', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/gator-v2.png', colors: ['Black', 'White', 'Beige'] },
 } as const
 
 interface City { id: string | number; name: string; subdistrict?: string; postal_code?: string }
@@ -170,7 +170,7 @@ export default function CheckoutPage() {
                   <h2 className="mt-1 text-2xl font-black tracking-[-0.05em]">{product.name}</h2>
                   <p className="mt-1 text-sm text-[#777]">{isCustom ? 'Custom' : 'Desain'}</p>
                 </div>
-                <p className="text-lg font-black">{formatPrice(product.price)}</p>
+                <div className="text-right"><p className="text-sm text-[#999] line-through">{formatPrice(product.oldPrice)}</p><p className="text-lg font-black text-[#ef4b32]">{formatPrice(product.price)}</p></div>
               </div>
               <div className="mt-6 flex flex-col gap-5 sm:flex-row">
                 <div className="w-full overflow-hidden rounded-2xl sm:w-36" style={{ aspectRatio: '9/16' }}>
@@ -293,7 +293,7 @@ export default function CheckoutPage() {
                 <p className="text-sm font-black">{formatPrice(product.price)}</p>
               </div>
               <div className="mt-3 space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-[#777]">Produk</span><span className="font-bold">{formatPrice(product.price)}</span></div>
+                <div className="flex justify-between"><span className="text-[#777]">Produk</span><span className="font-bold text-right"><span className="mr-2 text-xs text-[#999] line-through">{formatPrice(product.oldPrice)}</span>{formatPrice(product.price)}</span></div>
                 <div className="flex justify-between"><span className="text-[#777]">Ongkir</span><span className="font-bold">{shippingCost ? formatPrice(shipping) : '-'}</span></div>
                 <div className="border-t border-black/5 pt-2 flex justify-between"><span className="font-black">Total</span><span className="font-black">{formatPrice(total)}</span></div>
               </div>

@@ -9,7 +9,8 @@ const products = [
     id: 'neon-drip',
     name: 'Neon Drip',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: '/neon-drip-black.png',
     heroImage: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_42_05%20PM-2gUW7il51MvD8mqs27gsvaugVsVJ6C.png',
     tag: 'Best seller',
@@ -20,7 +21,8 @@ const products = [
     id: 'dragon-duo',
     name: 'Dragon Duo',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: '/dragon-duo-black.png',
     tag: 'Limited',
     accent: 'blue',
@@ -31,7 +33,8 @@ const products = [
     id: 'your-name',
     name: 'Your Name',
     kind: 'Custom',
-    price: 'Rp 25.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 25.000',
     image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_49_25%20PM-vYnuJFMY7Ne117XB3x1tj5GZsxzgkL.png',
     tag: 'Custom',
     accent: 'lime',
@@ -41,7 +44,8 @@ const products = [
     id: 'gothic-guardian',
     name: 'Gothic Guardian',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ChatGPT%20Image%20Sep%205%2C%202026%20at%2009_43_40%20PM-LSxDzqXc7EloDpwQ906cQvdFUA14ie.png',
     tag: 'New drop',
     accent: 'red',
@@ -51,7 +55,8 @@ const products = [
     id: 'koi',
     name: 'Koi',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: '/koi-v2.png',
     tag: 'New',
     accent: 'orange',
@@ -61,7 +66,8 @@ const products = [
     id: 'monkey-freak',
     name: 'Monkey Freak',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: '/monkey-freak-v2.png',
     tag: 'Trendy',
     accent: 'cyan',
@@ -71,7 +77,8 @@ const products = [
     id: 'o-sign',
     name: 'O-Sign',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: '/2025-08-31_4972dd651a843.png.png',
     tag: 'Premium',
     accent: 'gold',
@@ -81,7 +88,8 @@ const products = [
     id: 'viking-skull',
     name: 'Viking Skull',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: '/viking-skull-v2.png',
     tag: 'Bold',
     accent: 'dark',
@@ -91,7 +99,8 @@ const products = [
     id: 'hawaii',
     name: 'Hawaii',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: '/hawaii-v2.png',
     tag: 'Exclusive',
     accent: 'green',
@@ -101,7 +110,8 @@ const products = [
     id: 'old-skull',
     name: 'Old Skull',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: '/2c3f11fc0a5b0e14.jpg.png',
     tag: 'Hot',
     accent: 'red',
@@ -111,7 +121,8 @@ const products = [
     id: 'gator',
     name: 'Gator',
     kind: 'Desain',
-    price: 'Rp 20.000',
+    price: 'Rp 13.500',
+    oldPrice: 'Rp 20.000',
     image: '/gator-v2.png',
     tag: 'Space',
     accent: 'purple',
@@ -176,7 +187,7 @@ export default function Page() {
         <div className="hero-product-wrap"><div className="hero-ring ring-one" /><div className="hero-ring ring-two" /><div className="floating-chip chip-one"><Zap className="size-3 fill-current" /> tactile finish</div><div className="floating-chip chip-two">01 / 04</div><div className="hero-product"><img src={products[0].heroImage} alt="Case Neon Drip dengan korek api" /><div className="shine" /></div></div>
       </section>
 
-      <section id="shop" className="relative z-10 mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10"><div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#ef4b32]">The collection</p><h2 className="text-4xl font-black tracking-[-0.06em] sm:text-5xl">Pilih Gaya Kamu.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-[#666]">Case korek 3D dengan desain unik yang dibuat untuk dipakai setiap hari.</p></div><div className="flex flex-wrap gap-2">{filters.map((item) => <button key={item} onClick={() => setFilter(item)} className={`rounded-full px-4 py-2 text-xs font-bold transition ${filter === item ? 'bg-[#171717] text-white' : 'border border-black/10 bg-white text-[#777] hover:border-black/30'}`}>{item}</button>)}</div></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{visibleProducts.map((product) => <article key={product.id} className="product-card group"><div className={`product-image accent-${product.accent}`}><span className="product-tag">{product.tag}</span><img src={product.image} alt={`${product.name}, ${product.kind}`} style={product.objectPosition ? { objectPosition: product.objectPosition } : undefined} /><div className="card-shine" /></div><div className="flex items-start justify-between gap-3 pt-4"><div><p className="mb-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#999]">{product.kind}</p><h3 className="text-lg font-black tracking-[-0.04em]">{product.name}</h3><p className="mt-1 text-xs leading-5 text-[#777]">{product.description}</p></div><p className="whitespace-nowrap text-sm font-black">{product.price}</p></div><button onClick={() => buy(product)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-black/10 bg-white py-3 text-xs font-black transition hover:bg-[#171717] hover:text-white">{product.kind === 'Custom' ? 'Custom Sekarang' : 'Pilih Punyamu'} <ArrowRight className="size-3.5" /></button></article>)}</div></section>
+      <section id="shop" className="relative z-10 mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10"><div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#ef4b32]">The collection</p><h2 className="text-4xl font-black tracking-[-0.06em] sm:text-5xl">Pilih Gaya Kamu.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-[#666]">Case korek 3D dengan desain unik yang dibuat untuk dipakai setiap hari.</p></div><div className="flex flex-wrap gap-2">{filters.map((item) => <button key={item} onClick={() => setFilter(item)} className={`rounded-full px-4 py-2 text-xs font-bold transition ${filter === item ? 'bg-[#171717] text-white' : 'border border-black/10 bg-white text-[#777] hover:border-black/30'}`}>{item}</button>)}</div></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{visibleProducts.map((product) => <article key={product.id} className="product-card group"><div className={`product-image accent-${product.accent}`}><span className="product-tag">{product.tag}</span><img src={product.image} alt={`${product.name}, ${product.kind}`} style={product.objectPosition ? { objectPosition: product.objectPosition } : undefined} /><div className="card-shine" /></div><div className="flex items-start justify-between gap-3 pt-4"><div><p className="mb-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#999]">{product.kind}</p><h3 className="text-lg font-black tracking-[-0.04em]">{product.name}</h3><p className="mt-1 text-xs leading-5 text-[#777]">{product.description}</p></div><div className="whitespace-nowrap text-right"><p className="text-xs text-[#999] line-through">{product.oldPrice}</p><p className="text-sm font-black text-[#ef4b32]">{product.price}</p></div></div><button onClick={() => buy(product)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-black/10 bg-white py-3 text-xs font-black transition hover:bg-[#171717] hover:text-white">{product.kind === 'Custom' ? 'Custom Sekarang' : 'Pilih Punyamu'} <ArrowRight className="size-3.5" /></button></article>)}</div></section>
 
       <section className="relative z-10 mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10"><div className="rounded-[2rem] border border-black/10 bg-white/75 px-6 py-10 shadow-sm sm:px-10 sm:py-12"><div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-[#ef4b32]">Built different</p><h2 className="text-4xl font-black tracking-[-0.06em] sm:text-5xl">Kenapa JOGPRO?</h2></div><p className="max-w-xs text-sm leading-6 text-[#777]">Case kecil dengan karakter besar untuk menemani keseharianmu.</p></div><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{[['01', '3D Printed', 'Dibuat dengan detail dan karakter yang berbeda.'], ['02', 'Custom Nama', 'Bikin case yang benar-benar personal.'], ['03', 'Desain Unik', 'Bukan case korek biasa yang pasaran.'], ['04', 'Made for Everyday', 'Ringan, praktis, dan dibuat untuk dipakai setiap hari.']].map(([number, title, description]) => <div key={number} className="rounded-2xl border border-black/10 bg-[#fbfbf8] p-5"><p className="text-2xl font-black tracking-[-0.06em] text-[#ef4b32]">{number}</p><h3 className="mt-8 text-base font-black tracking-[-0.04em]">{title}</h3><p className="mt-2 text-xs leading-5 text-[#777]">{description}</p></div>)}</div></div></section>
 
@@ -186,7 +197,7 @@ export default function Page() {
 
       <section className="relative z-10 mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10"><div className="relative grid overflow-hidden rounded-[2rem] bg-[#d7ff3f] px-6 py-12 sm:px-10 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:px-16"><div className="relative z-10 flex flex-col items-start justify-center"><h2 className="max-w-md text-5xl font-black leading-[0.88] tracking-[-0.08em] sm:text-7xl">Korekmu.<br />Gayamu.</h2><p className="mt-6 max-w-md text-sm leading-6 text-black/60">Bukan cuma korek biasa. Pilih desain JOGPRO yang paling cocok buat kamu — atau buat versi custom dengan namamu sendiri.</p><a href="#shop" className="mt-8 inline-flex items-center gap-3 rounded-full bg-[#171717] px-5 py-3.5 text-xs font-black text-white transition hover:scale-[1.03]">PILIH CASE-MU <ArrowRight className="size-4" /></a><p className="mt-7 text-xs font-black uppercase tracking-[0.16em] text-black/45">Small flame. Big energy.</p></div><div className="relative mt-10 min-h-[290px] sm:min-h-[370px] lg:mt-0"><div className="absolute inset-0 rounded-full bg-white/35 blur-3xl" /><div className="final-product final-product-one"><img src={products[0].image} alt="Case JOGPRO Neon Drip" /></div><div className="final-product final-product-two"><img src={products[1].image} alt="Case JOGPRO Dragon Duo" /></div><div className="final-product final-product-three"><img src={products[2].image} alt="Case JOGPRO Your Name" /></div><div className="final-product final-product-four"><img src={products[3].image} alt="Case JOGPRO Gothic Guardian" /></div></div></div></section>
 
-      <section id="custom" className="relative z-10 mx-5 mb-24 overflow-hidden rounded-[2rem] bg-[#d7ff3f] px-6 py-12 sm:mx-8 sm:px-12 lg:mx-auto lg:max-w-7xl lg:px-20"><div className="absolute -right-10 -top-20 size-64 rounded-full border-[24px] border-[#171717]/[0.06]" /><div className="relative grid items-center gap-10 md:grid-cols-[1fr_0.8fr]"><div><div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#171717] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-[#d7ff3f]"><Pencil className="size-3" /> Made for you</div><h2 className="max-w-lg text-4xl font-black leading-[0.9] tracking-[-0.07em] sm:text-6xl">Put your name<br />on the flame.</h2><div className="mt-4"><p className="text-xs font-black uppercase tracking-[0.16em] text-black/50">Korek + Custom Case</p><p className="text-3xl font-black tracking-[-0.06em]">Rp25.000</p></div><p className="mt-4 max-w-sm text-sm leading-6 text-black/60">Tulis nama, nickname, atau inside joke kamu. Kami emboss langsung ke case hitam bertekstur.</p><div className="mt-7 flex max-w-sm items-center rounded-full bg-white p-1.5 shadow-sm"><input value={customName} onChange={(event) => setCustomName(event.target.value.toUpperCase().slice(0, 12))} aria-label="Nama untuk case custom" className="min-w-0 flex-1 bg-transparent px-4 text-sm font-black outline-none" placeholder="TULIS NAMAMU" /><button onClick={() => buy(products[2])} className="rounded-full bg-[#171717] px-4 py-3 text-xs font-black text-white">CUSTOM SEKARANG</button></div></div><div className="custom-preview"><div className="custom-case"><span>{customName || 'NAMAMU'}</span><div className="custom-lighter" /></div><p className="mt-4 text-center text-[10px] font-black uppercase tracking-[0.2em] text-black/40">preview engraving</p></div></div></section>
+      <section id="custom" className="relative z-10 mx-5 mb-24 overflow-hidden rounded-[2rem] bg-[#d7ff3f] px-6 py-12 sm:mx-8 sm:px-12 lg:mx-auto lg:max-w-7xl lg:px-20"><div className="absolute -right-10 -top-20 size-64 rounded-full border-[24px] border-[#171717]/[0.06]" /><div className="relative grid items-center gap-10 md:grid-cols-[1fr_0.8fr]"><div><div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#171717] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-[#d7ff3f]"><Pencil className="size-3" /> Made for you</div><h2 className="max-w-lg text-4xl font-black leading-[0.9] tracking-[-0.07em] sm:text-6xl">Put your name<br />on the flame.</h2><div className="mt-4"><p className="text-xs font-black uppercase tracking-[0.16em] text-black/50">Korek + Custom Case</p><p className="text-xl font-bold text-black/40 line-through">Rp25.000</p><p className="text-3xl font-black tracking-[-0.06em] text-[#ef4b32]">Rp13.500</p></div><p className="mt-4 max-w-sm text-sm leading-6 text-black/60">Tulis nama, nickname, atau inside joke kamu. Kami emboss langsung ke case hitam bertekstur.</p><div className="mt-7 flex max-w-sm items-center rounded-full bg-white p-1.5 shadow-sm"><input value={customName} onChange={(event) => setCustomName(event.target.value.toUpperCase().slice(0, 12))} aria-label="Nama untuk case custom" className="min-w-0 flex-1 bg-transparent px-4 text-sm font-black outline-none" placeholder="TULIS NAMAMU" /><button onClick={() => buy(products[2])} className="rounded-full bg-[#171717] px-4 py-3 text-xs font-black text-white">CUSTOM SEKARANG</button></div></div><div className="custom-preview"><div className="custom-case"><span>{customName || 'NAMAMU'}</span><div className="custom-lighter" /></div><p className="mt-4 text-center text-[10px] font-black uppercase tracking-[0.2em] text-black/40">preview engraving</p></div></div></section>
 
       <footer className="border-t border-black/10 px-5 py-8 text-xs text-[#888] sm:px-8 lg:px-10"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="font-black tracking-[-0.04em] text-[#171717]">JOGPRO</p><p className="mt-2 max-w-xs leading-5">Dikirim dari BSD, Tangerang Regency, Banten.</p></div><p>© 2026 Jogpro Studio. Handle with care.</p></div></footer>
 
