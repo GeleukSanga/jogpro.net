@@ -166,9 +166,11 @@ export default function CheckoutPage() {
 
       <div className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:px-8 lg:px-10 lg:pt-14">
         {promoActive && (
-          <div className="mb-6 flex items-center justify-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-center text-xs font-black tracking-wide text-white sm:text-sm">
-            <Timer className="size-4 text-[#d7ff3f]" />
-            <span>PROMO SPESIAL BERAKHIR DALAM <span className="text-[#d7ff3f] tabular-nums">{formatCountdown(promoSecs)}</span> — SEMUA PRODUK Rp13.500</span>
+          <div className="fixed bottom-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2">
+            <div className="flex items-center justify-center gap-2 rounded-full bg-[#171717]/95 px-5 py-3 text-center text-xs font-black tracking-wide text-white shadow-2xl backdrop-blur sm:text-sm">
+              <Timer className="size-4 shrink-0 text-[#d7ff3f]" />
+              <span>PROMO BERAKHIR <span className="text-[#d7ff3f] tabular-nums">{formatCountdown(promoSecs)}</span> — SEMUA Rp13.500</span>
+            </div>
           </div>
         )}
         <div className="mb-10 max-w-2xl">

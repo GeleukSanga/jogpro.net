@@ -194,10 +194,10 @@ export default function Page() {
       {menuOpen && <div className="relative z-20 flex flex-col gap-4 border-y border-black/10 bg-white px-6 py-5 text-sm font-semibold md:hidden"><a href="#shop" onClick={() => setMenuOpen(false)}>Shop</a><a href="#custom" onClick={() => setMenuOpen(false)}>Custom</a></div>}
 
       {promoActive && (
-        <div className="relative z-20 mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-          <div className="flex items-center justify-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-center text-xs font-black tracking-wide text-white sm:text-sm">
-            <Timer className="size-4 text-[#d7ff3f]" />
-            <span>PROMO SPESIAL BERAKHIR DALAM <span className="text-[#d7ff3f] tabular-nums">{formatCountdown(promoSecs)}</span> — SEMUA PRODUK Rp13.500</span>
+        <div className="fixed bottom-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2">
+          <div className="flex items-center justify-center gap-2 rounded-full bg-[#171717]/95 px-5 py-3 text-center text-xs font-black tracking-wide text-white shadow-2xl backdrop-blur sm:text-sm">
+            <Timer className="size-4 shrink-0 text-[#d7ff3f]" />
+            <span>PROMO BERAKHIR <span className="text-[#d7ff3f] tabular-nums">{formatCountdown(promoSecs)}</span> — SEMUA Rp13.500</span>
           </div>
         </div>
       )}
