@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Flame, Loader2, MapPin, Search, Truck } from 'lucide-react'
+import { ArrowLeft, Flame, Loader2, MapPin, Search, Timer, Truck } from 'lucide-react'
 import { fbqTrack } from '@/lib/fbPixel'
+import { PROMO_SECONDS, formatCountdown, getPromoRemaining } from '@/lib/promo'
 
 const products = {
   'neon-drip': { id: 'neon-drip', name: 'Neon Drip', kind: 'Desain', price: 13500, oldPrice: 20000, image: '/neon-drip-black.png', colors: ['Black', 'White', 'Beige'] },
@@ -49,6 +50,17 @@ export default function CheckoutPage() {
   const [shippingCost, setShippingCost] = useState<ShippingOption | null>(null)
   const [shippingLoading, setShippingLoading] = useState(false)
   const [formError, setFormError] = useState('')
+  const [promoSecs, setPromoSecs] = useState(PROMO_SECONDS)
+  const promoActive = promoSecs > 0
+  const unitPrice = promoActive ? product.price : product.oldPrice
+
+  useEffect(() => {
+    setPromoSecs(getPromoRemaining())
+    const t = window.setInterval(() => {
+      setPromoSecs((prev) => (prev > 0 ? prev - 1 : 0))
+    }, 1000)
+    return () => window.clearInterval(t)
+  }, [])
 
   const searchDest = useCallback(async (search: string) => {
     if (search.length < 2) { setDestResults([]); return }
@@ -86,7 +98,7 @@ export default function CheckoutPage() {
   }, [destSelected])
 
   const shipping = shippingCost?.cost || 0
-  const total = product.price + shipping
+  const total = unitPrice + shipping
 
   useEffect(() => {
     fbqTrack('ViewContent', {
@@ -153,6 +165,12 @@ export default function CheckoutPage() {
       </header>
 
       <div className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:px-8 lg:px-10 lg:pt-14">
+        {promoActive && (
+          <div className="mb-6 flex items-center justify-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-center text-xs font-black tracking-wide text-white sm:text-sm">
+            <Timer className="size-4 text-[#d7ff3f]" />
+            <span>PROMO SPESIAL BERAKHIR DALAM <span className="text-[#d7ff3f] tabular-nums">{formatCountdown(promoSecs)}</span> — SEMUA PRODUK Rp13.500</span>
+          </div>
+        )}
         <div className="mb-10 max-w-2xl">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-[#ef4b32]">Checkout</p>
           <h1 className="mt-2 text-5xl font-black leading-[0.9] tracking-[-0.08em] sm:text-7xl">Make it yours.</h1>
@@ -170,7 +188,7 @@ export default function CheckoutPage() {
                   <h2 className="mt-1 text-2xl font-black tracking-[-0.05em]">{product.name}</h2>
                   <p className="mt-1 text-sm text-[#777]">{isCustom ? 'Custom' : 'Desain'}</p>
                 </div>
-                <div className="text-right"><p className="text-sm text-[#999] line-through">{formatPrice(product.oldPrice)}</p><p className="text-lg font-black text-[#ef4b32]">{formatPrice(product.price)}</p></div>
+                <div className="text-right">{promoActive ? (<><p className="text-sm text-[#999] line-through">{formatPrice(product.oldPrice)}</p><p className="text-lg font-black text-[#ef4b32]">{formatPrice(product.price)}</p></>) : (<p className="text-lg font-black">{formatPrice(product.oldPrice)}</p>)}</div>
               </div>
               <div className="mt-6 flex flex-col gap-5 sm:flex-row">
                 <div className="w-full overflow-hidden rounded-2xl sm:w-36" style={{ aspectRatio: '9/16' }}>
@@ -293,7 +311,7 @@ export default function CheckoutPage() {
                 <p className="text-sm font-black">{formatPrice(product.price)}</p>
               </div>
               <div className="mt-3 space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-[#777]">Produk</span><span className="font-bold text-right"><span className="mr-2 text-xs text-[#999] line-through">{formatPrice(product.oldPrice)}</span>{formatPrice(product.price)}</span></div>
+                <div className="flex justify-between"><span className="text-[#777]">Produk</span>{promoActive ? (<span className="font-bold text-right"><span className="mr-2 text-xs text-[#999] line-through">{formatPrice(product.oldPrice)}</span>{formatPrice(product.price)}</span>) : (<span className="font-bold">{formatPrice(product.oldPrice)}</span>)}</div>
                 <div className="flex justify-between"><span className="text-[#777]">Ongkir</span><span className="font-bold">{shippingCost ? formatPrice(shipping) : '-'}</span></div>
                 <div className="border-t border-black/5 pt-2 flex justify-between"><span className="font-black">Total</span><span className="font-black">{formatPrice(total)}</span></div>
               </div>
