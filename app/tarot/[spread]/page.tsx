@@ -63,7 +63,7 @@ export default function TarotReadingPage() {
         <a className="logo" href="/" aria-label="JOGPRO TAROT home">JOGPRO <span>TAROT</span></a>
         <button className="menu-button" type="button" aria-expanded={menuOpen} aria-controls="reading-nav" onClick={() => setMenuOpen(!menuOpen)}><span className="sr-only">Toggle menu</span><i /><i /></button>
         <nav id="reading-nav" className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Main navigation">
-          <a href="/#spreads">Tarot Reading</a><a href="/#meanings">Card Meanings</a><a href="/tarot/daily">Daily</a><a href="/#about">About</a>
+          <a href="/#spreads">Tarot Reading</a><a href="/tarot/cards">Card Meanings</a><a href="/tarot/daily">Daily</a><a href="/#about">About</a>
         </nav>
         <a className="header-cta" href="/tarot/daily">Free Reading <Arrow /></a>
       </header>
