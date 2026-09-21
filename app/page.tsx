@@ -26,6 +26,7 @@ export default function Page() {
         <nav id="main-nav" className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Main navigation">
           <a href="#spreads" onClick={() => setMenuOpen(false)}>Tarot Reading</a>
           <a href="/tarot/cards" onClick={() => setMenuOpen(false)}>Card Meanings</a>
+          <a href="/tarot/weton" onClick={() => setMenuOpen(false)}>Cek Weton</a>
           <a href="#daily" onClick={() => setMenuOpen(false)}>Daily</a>
           <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
         </nav>
